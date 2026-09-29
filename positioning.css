@@ -3,3 +3,10 @@
 [data-section-id="699cebb961f58430e8d24847"] .fe-699cebb961f58430e8d24846{display:block;width:100%}
 [data-section-id="699cebb961f58430e8d24847"] .fe-block-be6f91c88cab61fc7a3f{max-width:900px;margin:0 auto}
 @media(max-width:767px){.td-positioning{padding:65px 7vw}.td-positioning h2{font-size:43px;line-height:1.12}.statement-break{display:none}}
+
+/* The statement sits over Audrey's completed venue interior. */
+.td-positioning--photo{position:relative;isolation:isolate;overflow:hidden;background:#64524c;scroll-margin-top:var(--header-height,104px)}
+.td-positioning-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 57%;z-index:-2}
+.td-positioning--photo::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(12,17,15,.5),rgba(12,17,15,.44) 50%,rgba(12,17,15,.5));z-index:-1;pointer-events:none}
+.td-positioning--photo h2{text-shadow:0 2px 18px rgba(0,0,0,.2)}
+@media(max-width:767px){.td-positioning-photo{object-position:58% center}}
