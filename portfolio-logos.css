@@ -1,0 +1,8 @@
+.work-tile .tile-brand{position:absolute;z-index:2;top:clamp(28px,3vw,54px);right:clamp(28px,3vw,54px);width:155px;height:75px;display:flex;justify-content:flex-end;align-items:flex-start;pointer-events:none;filter:drop-shadow(0 2px 7px #0008)}
+.work-tile .tile-brand img{width:100%;height:100%;object-fit:contain;object-position:top right;transform:none!important;transition:none}
+.work-tile .tile-brand--wide{height:50px}
+.work-tile .tile-brand--tall{width:68px;height:94px}.tile-brand--tall img{filter:brightness(0) invert(1)}
+.work-tile .tile-brand--doppler{height:85px;margin-top:-20px}
+.work-tile .tile-brand--wang{width:125px;height:125px;margin-top:-20px;margin-right:-14px;mix-blend-mode:screen;filter:none}
+.work-tile .tile-brand--text{font:40px/1 'Bebas Neue',Impact,sans-serif;letter-spacing:.02em;color:white;height:auto}
+@media(max-width:767px){.work-tile .tile-brand{top:25px;right:25px;width:112px;height:40px}.work-tile .tile-brand--tall{width:44px;height:60px}.work-tile .tile-brand--doppler{height:65px;margin-top:-15px}.work-tile .tile-brand--wang{width:90px;height:90px;margin-top:-14px;margin-right:-10px}.work-tile .tile-brand--text{font-size:30px}}
