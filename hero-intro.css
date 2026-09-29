@@ -1,3 +1,4 @@
+@font-face{font-family:'TDG Bodoni Accent';src:url('assets/fonts/BodoniModa-Italic-Variable.ttf') format('truetype');font-style:italic;font-weight:400 900;font-display:swap}
 /* One load sequence: draw the underline, shrink high above the centred statement, then reveal it. */
 #td-hero{--td-hero-height:max(620px,100svh);--td-headline-rest-scale:.39;--td-headline-rest-y:max(calc(var(--td-hero-height)*.2),calc(110px + 2.4vw));position:relative;height:var(--td-hero-height)!important;min-height:var(--td-hero-height)!important;overflow:hidden}
 #td-hero>.content-wrapper{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;max-width:none!important;margin:0!important;padding:0!important;display:block!important;z-index:2}
@@ -6,8 +7,10 @@
 .td-hero-intro::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.08),rgba(0,0,0,.32) 55%,rgba(0,0,0,.18));z-index:-1;pointer-events:none}
 #td-hero .td-hero-headline{position:absolute;top:var(--td-headline-rest-y);left:50%;width:94%;margin:0;color:#fff;font-family:'Bebas Neue',Impact,sans-serif;font-size:10.15vw;font-weight:700;line-height:.98;letter-spacing:-.02em;text-align:center;text-transform:uppercase;white-space:nowrap;transform-origin:center;transform:translate(-50%,-50%) scale(var(--td-headline-rest-scale));text-shadow:0 2px 20px #0003}
 .td-hero-underline{display:block;height:.15em;width:100%;margin-top:.055em;background:currentColor;transform-origin:left center}
-#td-hero .td-hero-statement{position:absolute;top:50%;left:50%;width:90%;max-width:1440px;margin:0;color:#fff;font-family:'Bebas Neue',Impact,sans-serif;font-size:clamp(36px,5.2vw,86px);font-weight:400;line-height:1.08;letter-spacing:-.01em;text-align:center;text-transform:uppercase;transform:translate(-50%,-50%);text-shadow:0 2px 20px #0004}
+#td-hero .td-hero-statement{position:absolute;top:50%;left:50%;width:90%;max-width:1440px;margin:0;color:#fff;font-family:'Bebas Neue',Impact,sans-serif;font-size:clamp(36px,min(5.2vw,10svh),86px);font-weight:400;line-height:1.08;letter-spacing:-.01em;text-align:center;text-transform:uppercase;transform:translate(-50%,-50%);text-shadow:0 2px 20px #0004}
 .td-statement-line{display:block}
+.td-statement-accent{font-family:'TDG Bodoni Accent',Georgia,serif;font-style:italic;font-weight:650;font-size:1.12em;letter-spacing:-.06em;text-transform:none;margin-inline:.08em}
+.td-statement-line:last-child .td-statement-accent{margin-right:0}
 .td-intro-pending #td-hero .td-hero-headline{transform:translate(-50%,-50%) translate(0,calc(var(--td-hero-height)*.5 - var(--td-headline-rest-y))) scale(1)}
 .td-intro-pending .td-hero-underline{transform:scaleX(0)}
 .td-intro-pending .td-statement-line{opacity:0;transform:translateY(18px)}
