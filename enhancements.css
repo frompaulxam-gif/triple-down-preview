@@ -11,7 +11,7 @@ html{scroll-behavior:smooth}
 .td-logo:hover{opacity:.58}.td-logo img{width:100%;height:100%;object-fit:contain;filter:brightness(0)}
 .td-logo.td-moonshine img{width:150px}.td-logo.td-daal img{width:270px;max-width:none;height:152px;flex-shrink:0;filter:grayscale(1) brightness(4) contrast(10) invert(1);mix-blend-mode:multiply}
 .td-logo.td-wang img{width:145px;height:145px;filter:invert(1);mix-blend-mode:multiply}
-.td-clients:has(.td-logo:hover) .td-logo-track,.td-clients:focus-within .td-logo-track,.td-clients.is-paused .td-logo-track{animation-play-state:paused}
+.td-clients:has(.td-logo:hover) .td-logo-track,.td-clients:has(.td-logo:focus-visible) .td-logo-track,.td-clients.is-paused .td-logo-track{animation-play-state:paused}
 @keyframes td-marquee{to{transform:translateX(-50%)}}
 .td-clients a:focus-visible,.td-motion:focus-visible{outline:2px solid #111;outline-offset:4px}
 /* Keep the existing headline and video, with enough space for the brand strip to enter the first scroll. */
