@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>Triple Down Group — accent type QC</title>
+  <style>
+    @font-face{font-family:Bebas;src:url('../sections/assets/bebas-neue.woff2') format('woff2');font-display:swap}
+    @font-face{font-family:Bodoni;src:url('../../assets/fonts/BodoniModa-Italic-Variable.ttf') format('truetype');font-style:italic;font-weight:400 900;font-display:swap}
+    @font-face{font-family:DMSerif;src:url('../../assets/fonts/DMSerifDisplay-Italic.ttf') format('truetype');font-style:italic;font-weight:400;font-display:swap}
+    @font-face{font-family:Fraunces;src:url('../../assets/fonts/Fraunces-Italic-700.ttf') format('truetype');font-style:italic;font-weight:700;font-display:swap}
+    @font-face{font-family:Lora;src:url('../../assets/fonts/Lora-Italic-700.ttf') format('truetype');font-style:italic;font-weight:700;font-display:swap}
+    :root{font-family:Arial,Helvetica,sans-serif;color:#f5f3ee;background:#0b0b0b}
+    *{box-sizing:border-box}
+    body{margin:0}
+    a{color:inherit}
+    .wrap{width:min(1640px,calc(100% - 48px));margin:auto}
+    header{padding:38px 0 30px;display:flex;align-items:end;justify-content:space-between;gap:24px;border-bottom:1px solid #45423e}
+    .eyebrow{font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#bbb6ae}
+    h1{font-family:Bebas,Impact,sans-serif;font-size:clamp(48px,7vw,104px);font-weight:400;line-height:.9;letter-spacing:-.015em;text-transform:uppercase;margin:10px 0 0}
+    .intro{font-size:15px;line-height:1.5;color:#d5d0c8;max-width:360px;margin:0}
+    .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin:24px 0 60px}
+    .card{min-width:0;background:#161616;border:1px solid #3c3a36}
+    .card.current{border-color:#706b62}
+    .card.recommended{border-color:#ded9cf}
+    .card-head{height:58px;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:0 20px;background:#e9e5dd;color:#161616}
+    .card-head strong{font-size:12px;letter-spacing:.11em;text-transform:uppercase}
+    .tag{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+    .stage{position:relative;min-height:350px;display:grid;place-items:center;overflow:hidden;padding:32px 28px;background:linear-gradient(180deg,#0311159c,#000b11ba),url('../../assets/site/33827fcc685f.jpg') center 46%/cover}
+    .stage::after{content:'';pointer-events:none;position:absolute;inset:0;border:1px solid #ffffff12}
+    .statement{position:relative;z-index:1;width:100%;font-family:Bebas,Impact,sans-serif;font-weight:400;text-align:center;text-transform:uppercase;font-size:clamp(32px,3.05vw,57px);line-height:1.13;letter-spacing:-.015em;text-shadow:0 2px 16px #0008}
+    .line{display:block;white-space:nowrap}
+    .accent{font-style:italic;text-transform:none;vertical-align:baseline;margin-inline:.07em}
+    .bodoni .accent{font-family:Bodoni,Georgia,serif;font-weight:650;font-size:1.12em;letter-spacing:-.06em}
+    .dm .accent{font-family:DMSerif,Georgia,serif;font-weight:400;font-size:1.06em;letter-spacing:-.035em}
+    .fraunces .accent{font-family:Fraunces,Georgia,serif;font-weight:700;font-size:1.06em;letter-spacing:-.045em}
+    .lora .accent{font-family:Lora,Georgia,serif;font-weight:700;font-size:1.01em;letter-spacing:-.045em}
+    .card-foot{display:flex;justify-content:space-between;align-items:center;gap:18px;min-height:64px;padding:12px 20px}
+    .card-foot p{margin:0;color:#c7c3ba;font-size:13px;line-height:1.35}
+    .card-foot a{flex:none;text-decoration:none;border-bottom:1px solid currentColor;padding-bottom:3px;font-size:12px}
+    .card-foot a:hover{color:#fff}
+    @media(max-width:1050px){.statement{font-size:clamp(28px,3.35vw,46px)}.stage{min-height:300px}}
+    @media(max-width:760px){.wrap{width:min(100% - 28px,560px)}header{display:block;padding:28px 0 20px}.intro{margin-top:16px}.grid{grid-template-columns:1fr;gap:14px}.stage{min-height:290px;padding:24px 10px}.statement{font-size:clamp(23px,6.1vw,39px)}.card-foot{align-items:start;flex-direction:column;gap:10px}}
+    @media(max-width:390px){.statement{font-size:5.8vw}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div><div class="eyebrow">Triple Down Group / type review</div><h1>Brands &amp; growth.</h1></div>
+      <p class="intro">The same hero line, same scale and background. Compare the two accent words, then open each option on the live page.</p>
+    </header>
+    <main class="grid">
+      <section class="card current bodoni" aria-labelledby="font-current">
+        <div class="card-head"><strong id="font-current">Current / Bodoni Moda</strong><span class="tag">Original</span></div>
+        <div class="stage"><div class="statement"><span class="line">We help <span class="accent">brands</span> build the</span><span class="line">structure, strategy &amp; systems</span><span class="line">required for serious <span class="accent">growth</span>.</span></div></div>
+        <div class="card-foot"><p>Elegant, but the thin strokes lose weight beside Bebas.</p><a href="../../variants/d/?v=hero-brand-1&amp;accent=bodoni">View on homepage ↗</a></div>
+      </section>
+      <section class="card recommended dm" aria-labelledby="font-dm">
+        <div class="card-head"><strong id="font-dm">Option A / DM Serif Display</strong><span class="tag">On preview now</span></div>
+        <div class="stage"><div class="statement"><span class="line">We help <span class="accent">brands</span> build the</span><span class="line">structure, strategy &amp; systems</span><span class="line">required for serious <span class="accent">growth</span>.</span></div></div>
+        <div class="card-foot"><p>Thicker strokes and a cleaner shape; my initial pick.</p><a href="../../variants/d/?v=hero-brand-1&amp;accent=dm-serif">View on homepage ↗</a></div>
+      </section>
+      <section class="card fraunces" aria-labelledby="font-fraunces">
+        <div class="card-head"><strong id="font-fraunces">Option B / Fraunces</strong><span class="tag">Bolder</span></div>
+        <div class="stage"><div class="statement"><span class="line">We help <span class="accent">brands</span> build the</span><span class="line">structure, strategy &amp; systems</span><span class="line">required for serious <span class="accent">growth</span>.</span></div></div>
+        <div class="card-foot"><p>More personality and punch, especially against moving footage.</p><a href="../../variants/d/?v=hero-brand-1&amp;accent=fraunces">View on homepage ↗</a></div>
+      </section>
+      <section class="card lora" aria-labelledby="font-lora">
+        <div class="card-head"><strong id="font-lora">Option C / Lora</strong><span class="tag">Grounded</span></div>
+        <div class="stage"><div class="statement"><span class="line">We help <span class="accent">brands</span> build the</span><span class="line">structure, strategy &amp; systems</span><span class="line">required for serious <span class="accent">growth</span>.</span></div></div>
+        <div class="card-foot"><p>A quieter, sturdy contrast with the condensed headline.</p><a href="../../variants/d/?v=hero-brand-1&amp;accent=lora">View on homepage ↗</a></div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>
