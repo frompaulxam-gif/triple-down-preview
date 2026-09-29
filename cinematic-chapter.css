@@ -1,0 +1,35 @@
+@font-face{font-family:'TDG Chapter';src:url('./review/sections/assets/league-gothic.woff2') format('woff2');font-display:swap}
+html.td-cinematic-ready [data-section-id="699cebb961f58430e8d24847"],
+html.td-cinematic-ready [data-section-id="699ceb4c20c1829d7152ef4f"],
+html.td-cinematic-ready [data-section-id="626ed4bda6ff595d5a888847"],
+html.td-cinematic-ready [data-section-id="66bf39dbf79041068a0d40dc"],
+html.td-cinematic-ready [data-section-id="626edbaa1b6c545dfb289258"],
+html.td-cinematic-ready [data-section-id="699d97a4c9befe6c42c97ac9"]{display:none!important}
+#td-cinematic-about,#td-cinematic-services{box-sizing:border-box;background:#090909;color:#fff;position:relative}
+#td-cinematic-about *,#td-cinematic-services *{box-sizing:border-box}
+#td-cinematic-about{min-height:690px;background:#211511 url('./assets/site/33827fcc685f.jpg') center/cover}
+.td-cinematic-about__veil{min-height:690px;background:linear-gradient(90deg,rgba(8,6,6,.83),rgba(8,6,6,.28) 54%,rgba(8,6,6,.49)),linear-gradient(0deg,rgba(0,0,0,.46),transparent 58%);display:flex;flex-direction:column;justify-content:space-between;padding:clamp(32px,5vw,82px)}
+.td-cinematic-about__eyebrow,.td-cinematic-stage__eyebrow{font:700 11px/1.3 Arial,Helvetica,sans-serif;letter-spacing:.17em;text-transform:uppercase}
+.td-cinematic-about__body{width:100%;max-width:1600px;margin:auto;display:grid;grid-template-columns:minmax(0,1fr) minmax(380px,560px);align-items:end;gap:clamp(32px,5vw,90px)}
+.td-cinematic-about__body h2{font:400 clamp(88px,10vw,170px)/.8 'TDG Chapter','League Gothic',Impact,sans-serif;color:#fff!important;text-transform:uppercase;margin:0;max-width:760px;text-wrap:balance;text-shadow:0 2px 20px #0006}
+.td-cinematic-about__questions{background:rgba(18,12,11,.82);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);padding:16px 30px}
+.td-cinematic-about__questions details{border-bottom:1px solid rgba(235,226,213,.55)}
+.td-cinematic-about__questions summary{list-style:none;cursor:pointer;display:flex;align-items:center;min-height:80px;gap:15px;font:400 clamp(27px,2.4vw,40px)/1 'TDG Chapter','League Gothic',Impact,sans-serif;text-transform:uppercase}
+.td-cinematic-about__questions summary::-webkit-details-marker{display:none}
+.td-cinematic-about__questions summary b{margin-left:auto;font:400 32px/1 Arial,Helvetica,sans-serif}
+.td-cinematic-about__questions summary b:before{content:'+'}
+.td-cinematic-about__questions details[open] summary b:before{content:'×'}
+.td-cinematic-about__questions p{font:400 15px/1.5 Arial,Helvetica,sans-serif;color:#e5ded8;margin:0 28px 26px 0;max-width:470px}
+.td-cinematic-about__questions summary:focus-visible,.td-cinematic-choice:focus-visible{outline:2px solid #ffb99a;outline-offset:-3px}
+#td-cinematic-services{width:100%;overflow:hidden}
+.td-cinematic-stage{height:clamp(610px,75svh,940px);position:relative;overflow:hidden}
+.td-cinematic-stage__panel{position:absolute;inset:0;background-image:linear-gradient(180deg,rgba(0,0,0,.06) 24%,rgba(0,0,0,.72)),var(--td-chapter-photo);background-size:cover;background-position:center;display:flex;flex-direction:column;justify-content:space-between;padding:clamp(32px,5vw,82px);opacity:0;visibility:hidden;transition:opacity .45s ease,visibility .45s}
+.td-cinematic-stage__panel.is-active{opacity:1;visibility:visible}
+.td-cinematic-stage__panel h2{font:400 clamp(90px,11vw,190px)/.78 'TDG Chapter','League Gothic',Impact,sans-serif;color:#fff!important;text-transform:uppercase;max-width:1000px;margin:0;text-shadow:0 2px 24px #0005;text-wrap:balance}
+.td-cinematic-choices{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));min-height:155px}
+.td-cinematic-choice{border:0;border-right:1px solid #59524b;border-top:1px solid #59524b;background:#101010;color:#c4c0ba;text-align:left;padding:20px clamp(12px,1.5vw,26px);cursor:pointer;font:400 clamp(28px,2.5vw,44px)/.9 'TDG Chapter','League Gothic',Impact,sans-serif;text-transform:uppercase;transition:background .2s,color .2s}
+.td-cinematic-choice:last-child{border-right:0}
+.td-cinematic-choice:hover,.td-cinematic-choice.is-active{background:#e9e4d9;color:#111}
+@media(max-width:900px){.td-cinematic-about__body{grid-template-columns:1fr;gap:50px}.td-cinematic-about__body h2{font-size:clamp(84px,12vw,120px);max-width:800px}.td-cinematic-about__questions{max-width:720px;margin-left:auto;width:100%}.td-cinematic-stage__panel h2{font-size:clamp(75px,12vw,130px)}.td-cinematic-choice{font-size:clamp(25px,3vw,32px)}}
+@media(max-width:600px){#td-cinematic-about,.td-cinematic-about__veil{min-height:760px}.td-cinematic-about__veil{padding:28px 20px 32px}.td-cinematic-about__body{display:block}.td-cinematic-about__body h2{font-size:clamp(70px,18vw,103px);margin:125px 0 52px}.td-cinematic-about__questions{padding:8px 18px}.td-cinematic-about__questions summary{min-height:61px;font-size:28px}.td-cinematic-about__questions p{font-size:13px;line-height:1.45;margin-bottom:18px}.td-cinematic-stage{height:min(78svh,720px);min-height:520px}.td-cinematic-stage__panel{padding:25px 20px 34px}.td-cinematic-stage__panel h2{font-size:clamp(70px,19vw,110px)}.td-cinematic-choices{display:block;min-height:0}.td-cinematic-choice{width:100%;display:block;border-right:0;min-height:68px;padding:12px 22px;font-size:31px}}
+@media(prefers-reduced-motion:reduce){.td-cinematic-stage__panel,.td-cinematic-choice{transition:none!important}}
