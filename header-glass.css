@@ -46,3 +46,10 @@ body[data-td-header="glass"] #selected-work{scroll-margin-top:var(--header-heigh
   body[data-td-header="glass"] #header.td-header-scrolled::before{background:rgba(18,18,18,.88)}
 }
 @media(prefers-reduced-motion:reduce){body[data-td-header="glass"] #header::before{transition:none}}
+
+/* Use the supplied brush mark in the existing top-left home link. */
+body[data-td-header="glass"] #header .header-title-text:has(.td-site-logo-link){font-size:0;line-height:0}
+body[data-td-header="glass"] #header .td-site-logo-link{display:inline-flex;align-items:center;vertical-align:middle;line-height:1}
+body[data-td-header="glass"] #header .td-site-logo{display:block;width:132px!important;height:auto!important;max-width:none!important;object-fit:contain}
+@media(min-width:768px){body[data-td-header="glass"] #header .header-announcement-bar-wrapper{padding-top:12px!important;padding-bottom:12px!important}}
+@media(max-width:767px){body[data-td-header="glass"] #header .td-site-logo{width:94px!important}}
