@@ -1,0 +1,21 @@
+/* Keep the portfolio header consistent with the main site's brush mark. */
+.work-header{position:relative;z-index:20;min-height:118px;padding:16px 4vw;background:#181818;color:#fff;border:0}
+.work-logo-link{display:inline-flex;align-items:center;gap:16px;flex:none;line-height:1}
+.work-site-logo{display:block;flex:none;width:110px;height:auto;object-fit:contain}
+.work-site-wordmark{display:block;font:400 36px/.9 'Bebas Neue',Impact,sans-serif;text-align:left;white-space:nowrap}
+.work-site-wordmark>span{display:block}
+.work-header nav{align-items:center;gap:26px;font-size:20px}
+.work-header nav a{white-space:nowrap}
+.work-menu-toggle{display:none}
+@media(max-width:767px){
+  .work-header{min-height:96px;padding:16px 6vw;align-items:center}
+  .work-logo-link{gap:12px}
+  .work-site-logo{width:72px}
+  .work-site-wordmark{font-size:26px}
+  .work-menu-toggle{display:flex;flex-direction:column;justify-content:center;gap:6px;width:44px;height:44px;padding:7px;border:0;background:transparent;color:#fff;cursor:pointer}
+  .work-menu-toggle span{display:block;width:100%;height:2px;background:currentColor}
+  .work-header nav{display:none;position:absolute;top:100%;left:0;right:0;width:100%;max-width:none;padding:18px 6vw 24px;background:rgba(24,24,24,.96);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);flex-direction:column;align-items:stretch;gap:0;font-size:20px}
+  .work-header nav.is-open{display:flex}
+  .work-header nav a{padding:12px 0}
+}
+.work-menu-toggle:focus-visible{outline:3px solid #fff;outline-offset:3px}
