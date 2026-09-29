@@ -21,7 +21,7 @@ html{scroll-behavior:smooth}
 @media(max-width:767px){.td-logo.td-daal img{transform:translateY(13px)}}
 
 /* Variant D: compact client strip with no visible heading. */
-.td-clients--compact{padding:32px 0 35px}
+.td-clients--compact{padding:32px 0 35px;border-bottom:0}
 .td-clients--compact .td-logo{width:153px;flex-basis:153px;height:85px}
 .td-clients--compact .td-logo.td-moonshine img{width:128px}
 .td-clients--compact .td-logo.td-daal img{width:230px;height:129px;transform:translateY(12px)}
