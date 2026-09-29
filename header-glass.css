@@ -1,0 +1,48 @@
+/* Transparent over the film; dark frosted glass after the first scroll. */
+body[data-td-header="glass"] #header{
+  position:fixed!important;inset:0 0 auto!important;width:100%!important;
+  z-index:1000;isolation:isolate;transform:none!important;
+  background:transparent!important;color:#fff!important;
+  --solidHeaderBackgroundColor:transparent;
+  --solidHeaderNavigationColor:#fff;
+  --gradientHeaderBackgroundColor:transparent;
+  --gradientHeaderNavigationColor:#fff;
+}
+body[data-td-header="glass"] #header::before{
+  content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
+  background:transparent;-webkit-backdrop-filter:blur(0);backdrop-filter:blur(0);
+  transition:background-color .22s ease,backdrop-filter .22s ease,-webkit-backdrop-filter .22s ease;
+}
+body[data-td-header="glass"] #header.td-header-scrolled::before{
+  background:rgba(18,18,18,.68);
+  -webkit-backdrop-filter:blur(18px) saturate(120%);backdrop-filter:blur(18px) saturate(120%);
+}
+body[data-td-header="glass"] #header .header-background-solid,
+body[data-td-header="glass"] #header .header-background,
+body[data-td-header="glass"] #header .header-border,
+body[data-td-header="glass"] #header .header-dropshadow{background:transparent!important;box-shadow:none!important;border:0!important}
+body[data-td-header="glass"] #header .header-title-text a,
+body[data-td-header="glass"] #header .header-nav a,
+body[data-td-header="glass"] #header .header-nav-folder-title,
+body[data-td-header="glass"] #header .header-menu a{color:#fff!important}
+body[data-td-header="glass"] #header .header-title-text,
+body[data-td-header="glass"] #header .header-nav{color:#fff;text-shadow:0 1px 10px #0003}
+body[data-td-header="glass"] #header .header-nav-item--active a{background-image:linear-gradient(#fff,#fff)!important}
+body[data-td-header="glass"] #header .top-bun,
+body[data-td-header="glass"] #header .patty,
+body[data-td-header="glass"] #header .bottom-bun{background:#fff!important}
+body[data-td-header="glass"] #header .header-nav-folder-content{
+  background:rgba(18,18,18,.9)!important;
+  -webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);
+}
+body[data-td-header="glass"] #header .header-menu-bg{background:rgba(18,18,18,.96)!important}
+body[data-td-header="glass"] #header .header-dropdown-icon svg,
+body[data-td-header="glass"] #header .header-dropdown-icon use{color:#fff!important;stroke:#fff!important}
+body[data-td-header="glass"] #header a:focus-visible,
+body[data-td-header="glass"] #header button:focus-visible{outline:2px solid #fff;outline-offset:5px}
+body[data-td-header="glass"] #td-projects,
+body[data-td-header="glass"] #selected-work{scroll-margin-top:var(--header-height,88px)}
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+  body[data-td-header="glass"] #header.td-header-scrolled::before{background:rgba(18,18,18,.88)}
+}
+@media(prefers-reduced-motion:reduce){body[data-td-header="glass"] #header::before{transition:none}}
