@@ -21,7 +21,7 @@
     brand = document.createElement('div');
     brand.className = 'td-hero-brand-reveal';
     brand.setAttribute('aria-hidden', 'true');
-    brand.innerHTML = '<img class="td-site-logo" src="assets/triple-down-logo-white.svg" alt=""><span class="td-site-wordmark"><span>TRIPLE DOWN</span><span>GROUP</span></span>';
+    brand.innerHTML = '<img class="td-site-logo" src="assets/triple-down-logo-vector.svg" alt=""><span class="td-site-wordmark"><span>TRIPLE DOWN</span><span>GROUP</span></span>';
     brand.style.left = `${target.left}px`;
     brand.style.top = `${target.top}px`;
     document.body.append(brand);
