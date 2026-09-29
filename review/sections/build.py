@@ -39,7 +39,7 @@ def faq_a():
 
 def faq_b():
     return '''<div class="faq-b"><div class="faq-b__shade"><span class="eyebrow">TRIPLE DOWN GROUP / OUR POV</span><h4>The questions<br>behind the work.</h4><div class="faq-b__list">''' + ''.join(
-        f'<details {"open" if i == 0 else ""}><summary><span>0{i+1}</span>{escape(title)}<b aria-hidden="true">↗</b></summary><p>{escape(body)}</p></details>' for i, (title, body) in enumerate(questions)
+        f'<details {"open" if i == 0 else ""}><summary>{escape(title)}<b aria-hidden="true"></b></summary><p>{escape(body)}</p></details>' for i, (title, body) in enumerate(questions)
     ) + '</div></div></div>'
 
 def faq_c():
@@ -53,8 +53,8 @@ def services_a():
     ) + '</div>'
 
 def services_b():
-    nav = ''.join(f'<button type="button" class="stage-choice {"is-active" if i == 0 else ""}" data-stage="{i}" aria-pressed="{"true" if i == 0 else "false"}"><span>0{i+1}</span>{escape(title)}</button>' for i, (title, _) in enumerate(services))
-    panels = ''.join(f'<div class="stage-panel {"is-active" if i == 0 else ""}" data-panel="{i}" style="--photo:url(\'{img(photo)}\')"><span class="eyebrow">WHAT WE DO / 0{i+1}</span><h4>{escape(title)}</h4></div>' for i, (title, photo) in enumerate(services))
+    nav = ''.join(f'<button type="button" class="stage-choice {"is-active" if i == 0 else ""}" data-stage="{i}" aria-pressed="{"true" if i == 0 else "false"}">{escape(title)}</button>' for i, (title, _) in enumerate(services))
+    panels = ''.join(f'<div class="stage-panel {"is-active" if i == 0 else ""}" data-panel="{i}" style="--photo:url(\'{img(photo)}\')"><span class="eyebrow">WHAT WE DO</span><h4>{escape(title)}</h4></div>' for i, (title, photo) in enumerate(services))
     return f'<div class="services-b"><div class="services-b__stage">{panels}</div><div class="services-b__nav" aria-label="Explore services">{nav}</div></div>'
 
 def services_c():
