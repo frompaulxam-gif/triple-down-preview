@@ -1,0 +1,7 @@
+/* Repeating full-width / paired rows, including after filtering. */
+.work-grid{gap:clamp(22px,3vw,48px)}
+.work-grid .work-tile{border-radius:clamp(28px,4.8vw,80px);grid-column:auto;aspect-ratio:1.2}
+.work-grid .work-tile.is-wide{grid-column:1/-1;aspect-ratio:1.85}
+.work-filters button{border-radius:999px}
+.tile-caption{left:clamp(28px,3vw,54px);right:clamp(28px,3vw,54px);bottom:clamp(28px,3vw,54px)}
+@media(max-width:767px){.work-grid{gap:22px}.work-grid .work-tile,.work-grid .work-tile.is-wide{grid-column:auto;aspect-ratio:1.12;border-radius:30px}.tile-caption{left:25px;right:25px;bottom:25px}}
