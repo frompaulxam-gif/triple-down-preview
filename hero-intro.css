@@ -23,9 +23,9 @@ html[data-td-accent='lora'] .td-statement-accent{font-family:'TDG Lora Accent',G
 .td-intro-pending #header .td-site-logo-link,.td-intro-running #header .td-site-logo-link{opacity:0}
 .td-intro-running #td-hero .td-hero-headline{animation:td-hero-travel 1.47s both}
 .td-intro-running .td-hero-underline{animation:td-hero-extend .78s cubic-bezier(.23,1,.32,1) both}
-.td-intro-running .td-statement-line{animation:td-hero-reveal .48s cubic-bezier(.23,1,.32,1) 3.02s both}
-.td-intro-running .td-statement-line:nth-child(2){animation-delay:3.09s}
-.td-intro-running .td-statement-line:nth-child(3){animation-delay:3.16s}
+.td-intro-running .td-statement-line{animation:td-hero-reveal .48s cubic-bezier(.23,1,.32,1) 3.2s both}
+.td-intro-running .td-statement-line:nth-child(2){animation-delay:3.27s}
+.td-intro-running .td-statement-line:nth-child(3){animation-delay:3.34s}
 .td-intro-paused #td-hero .td-hero-headline,.td-intro-paused .td-hero-underline,.td-intro-paused .td-statement-line,.td-intro-paused .td-hero-brand-reveal,.td-intro-paused .td-hero-brand-reveal *{animation-play-state:paused}
 @keyframes td-hero-travel{
   0%,45%{transform:translate(-50%,-50%) translate(0,calc(var(--td-hero-height)*.5 - var(--td-headline-rest-y))) scale(1);animation-timing-function:cubic-bezier(.77,0,.175,1)}
@@ -33,16 +33,22 @@ html[data-td-accent='lora'] .td-statement-accent{font-family:'TDG Lora Accent',G
 }
 @keyframes td-hero-extend{from{transform:scaleX(0)}to{transform:scaleX(1)}}
 @keyframes td-hero-reveal{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
-.td-hero-brand-reveal{position:fixed;z-index:1001;display:inline-flex;align-items:center;gap:16px;color:#fff;font-family:'Bebas Neue',Impact,sans-serif;font-size:36px;font-weight:400;line-height:1;white-space:nowrap;pointer-events:none;transform-origin:center center;transform:translate(var(--td-brand-dx),var(--td-brand-dy)) scale(var(--td-brand-scale));filter:drop-shadow(0 3px 15px #0005);will-change:transform}
+.td-hero-brand-reveal{position:fixed;z-index:1001;display:inline-flex;align-items:center;gap:16px;color:#fff;font-family:'Bebas Neue',Impact,sans-serif;font-size:36px;font-weight:400;line-height:1;white-space:nowrap;pointer-events:none;transform-origin:center center;transform:translate(var(--td-brand-mark-dx),var(--td-brand-dy)) scale(var(--td-brand-scale));filter:drop-shadow(0 3px 15px #0005);will-change:transform}
 .td-hero-brand-reveal .td-site-logo{display:block;flex:none;width:110px;height:auto;max-width:none;object-fit:contain;opacity:0}
 .td-hero-brand-reveal .td-site-wordmark{display:block;font-size:36px;line-height:.9;text-align:left;white-space:nowrap;opacity:0;clip-path:inset(0 100% 0 0)}
 .td-hero-brand-reveal .td-site-wordmark>span{display:block}
-.td-intro-running .td-hero-brand-reveal{animation:td-brand-travel .72s cubic-bezier(.76,0,.2,1) 2.33s both}
-.td-intro-running .td-hero-brand-reveal .td-site-logo{animation:td-brand-mark .34s cubic-bezier(.18,1.2,.33,1) 1.47s both}
-.td-intro-running .td-hero-brand-reveal .td-site-wordmark{animation:td-brand-word .46s cubic-bezier(.2,.75,.2,1) 1.79s both}
+.td-intro-running .td-hero-brand-reveal{animation:td-brand-travel 1.7s 1.47s both}
+.td-intro-running .td-hero-brand-reveal .td-site-logo{animation:td-brand-mark .26s cubic-bezier(.18,1.2,.33,1) 1.47s both}
+.td-intro-running .td-hero-brand-reveal .td-site-wordmark{animation:td-brand-word .46s cubic-bezier(.2,.75,.2,1) 1.82s both}
 @keyframes td-brand-mark{from{opacity:0;transform:scale(.83)}to{opacity:1;transform:scale(1)}}
 @keyframes td-brand-word{from{opacity:0;clip-path:inset(0 100% 0 0);transform:translateX(24px)}to{opacity:1;clip-path:inset(0 0 0 0);transform:translateX(0)}}
-@keyframes td-brand-travel{from{transform:translate(var(--td-brand-dx),var(--td-brand-dy)) scale(var(--td-brand-scale))}to{transform:translate(0,0) scale(1)}}
+@keyframes td-brand-travel{
+  0%,16%{transform:translate(var(--td-brand-mark-dx),var(--td-brand-dy)) scale(var(--td-brand-scale))}
+  16%{animation-timing-function:cubic-bezier(.22,.8,.2,1)}
+  45%,52%{transform:translate(var(--td-brand-group-dx),var(--td-brand-dy)) scale(var(--td-brand-scale))}
+  52%{animation-timing-function:cubic-bezier(.76,0,.2,1)}
+  100%{transform:translate(0,0) scale(1)}
+}
 @media(max-width:767px){
   #td-hero{--td-hero-height:max(680px,100svh);--td-headline-rest-scale:.78}
   #td-hero .td-hero-statement{width:92%;font-size:clamp(27px,7.8vw,48px);line-height:1.12}

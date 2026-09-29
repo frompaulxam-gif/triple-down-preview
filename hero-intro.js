@@ -28,9 +28,13 @@
     const rect = brand.getBoundingClientRect();
     const width = rect.width || target.width;
     const height = rect.height || target.height;
-    brand.style.setProperty('--td-brand-dx', `${innerWidth / 2 - target.left - width / 2}px`);
+    const markWidth = brand.querySelector('.td-site-logo').getBoundingClientRect().width;
+    const scale = Math.min(2.25, innerWidth * .86 / width);
+    const groupDx = innerWidth / 2 - target.left - width / 2;
+    brand.style.setProperty('--td-brand-mark-dx', `${groupDx + scale * (width - markWidth) / 2}px`);
+    brand.style.setProperty('--td-brand-group-dx', `${groupDx}px`);
     brand.style.setProperty('--td-brand-dy', `${innerHeight / 2 - target.top - height / 2}px`);
-    brand.style.setProperty('--td-brand-scale', String(Math.min(2.25, innerWidth * .86 / width)));
+    brand.style.setProperty('--td-brand-scale', String(scale));
   };
   const ready = document.fonts ? document.fonts.ready : Promise.resolve();
   Promise.race([ready, new Promise(resolve => setTimeout(resolve, 1200))]).then(() => {
