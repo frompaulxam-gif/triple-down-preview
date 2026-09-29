@@ -3,7 +3,6 @@ html{scroll-behavior:smooth}
 .td-clients{--td-ink:#111;--td-paper:#fff;background:var(--td-paper);color:var(--td-ink);padding:35px 0 42px;position:relative;overflow:hidden;border-bottom:1px solid #dedede}
 .td-clients-heading{display:flex;align-items:center;justify-content:space-between;padding:0 3vw;margin:0 0 25px;gap:20px}
 .td-clients-heading h2{font-family:"Bebas Neue",Impact,sans-serif;font-size:clamp(22px,2vw,30px);font-weight:400;line-height:1.1;margin:0;color:#111}
-.td-motion{font:12px Arial,sans-serif;background:none;border:0;color:#666;cursor:pointer;padding:10px 0;white-space:nowrap}.td-motion span{margin-left:8px}
 .td-logo-window{mask-image:linear-gradient(to right,transparent,#000 5%,#000 95%,transparent);overflow:hidden}
 .td-logo-track{display:flex;width:max-content;animation:td-marquee 54s linear infinite;will-change:transform}
 .td-logo-group{display:flex;align-items:center;gap:clamp(50px,6vw,90px);padding-right:clamp(50px,6vw,90px);flex-shrink:0}
@@ -11,13 +10,12 @@ html{scroll-behavior:smooth}
 .td-logo:hover{opacity:.58}.td-logo img{width:100%;height:100%;object-fit:contain;filter:brightness(0)}
 .td-logo.td-moonshine img{width:150px}.td-logo.td-daal img{width:270px;max-width:none;height:152px;flex-shrink:0;filter:grayscale(1) brightness(4) contrast(10) invert(1);mix-blend-mode:multiply}
 .td-logo.td-wang img{width:145px;height:145px;filter:invert(1);mix-blend-mode:multiply}
-.td-clients:has(.td-logo:hover) .td-logo-track,.td-clients:has(.td-logo:focus-visible) .td-logo-track,.td-clients.is-paused .td-logo-track{animation-play-state:paused}
 @keyframes td-marquee{to{transform:translateX(-50%)}}
-.td-clients a:focus-visible,.td-motion:focus-visible{outline:2px solid #111;outline-offset:4px}
+.td-clients a:focus-visible{outline:2px solid #111;outline-offset:4px}
 /* Keep the existing headline and video, with enough space for the brand strip to enter the first scroll. */
 [data-td-home] section[data-section-id="699ce34938461ef8199cce0c"]{min-height:76svh!important}
 [data-td-home] section[data-section-id="699ce34938461ef8199cce0c"] .content-wrapper{padding-top:10vh!important;padding-bottom:10vh!important}
 @media(max-width:767px){.td-clients{padding:25px 0 30px}.td-clients-heading{padding:0 6vw;margin-bottom:20px}.td-clients-heading h2{max-width:210px}.td-logo{width:145px;flex-basis:145px;height:85px}.td-logo-group{gap:40px;padding-right:40px}.td-logo-track{animation-duration:48s}.td-logo.td-moonshine img{width:135px}.td-logo.td-daal img{width:245px;height:138px}.td-logo.td-wang img{width:130px;height:130px}}
-@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.td-logo-track{animation:none;transform:none}.td-logo-group[aria-hidden]{display:none}.td-logo-window{overflow-x:auto;mask-image:none}.td-clients-heading .td-motion{display:none}.td-logo-group{padding:0 6vw;gap:40px}.td-logo{transition:none}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.td-logo-track{animation:none;transform:none}.td-logo-group[aria-hidden]{display:none}.td-logo-window{overflow-x:auto;mask-image:none}.td-logo-group{padding:0 6vw;gap:40px}.td-logo{transition:none}}
 .td-logo.td-daal img{transform:translateY(14px)}
 @media(max-width:767px){.td-logo.td-daal img{transform:translateY(13px)}}

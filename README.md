@@ -4,7 +4,7 @@ A review copy of the live Triple Down site, with a seamless moving client-logo s
 
 Preserves the original homepage and seven project pages, existing typography, copy, image galleries, native video configurations and SoundCloud embed. Includes 163 original site image URLs downloaded locally. The 33 video placements continue streaming from the original Squarespace CDN; the videos have not been re-edited or replaced. `asset-manifest.json` records the original images and video streams.
 
-Logo strip: Moonshine, Audrey, Daal & Bass, Merchants Yard, Beastwang, Doppler, Sophy, At One and Wang Records. Dig In remains in the project menu; a separate verified logo was unavailable. Actual sourced logo images are displayed in monochrome using CSS. Motion supports pause, keyboard focus, hover, and reduced-motion preferences.
+Logo strip: Moonshine, Audrey, Daal & Bass, Merchants Yard, Beastwang, Doppler, Sophy, At One and Wang Records. Dig In remains in the project menu; a separate verified logo was unavailable. Actual sourced logo images are displayed in monochrome using CSS. Logo motion is continuous, including on hover, with no pause button. Reduced-motion preferences are respected.
 
 Preview changes are isolated to enhancements.css and enhancements.js. Search engines are asked not to index the preview.
 
