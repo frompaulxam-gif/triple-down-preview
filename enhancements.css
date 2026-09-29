@@ -19,3 +19,5 @@ html{scroll-behavior:smooth}
 [data-td-home] section[data-section-id="699ce34938461ef8199cce0c"] .content-wrapper{padding-top:10vh!important;padding-bottom:10vh!important}
 @media(max-width:767px){.td-clients{padding:25px 0 30px}.td-clients-heading{padding:0 6vw;margin-bottom:20px}.td-clients-heading h2{max-width:210px}.td-logo{width:145px;flex-basis:145px;height:85px}.td-logo-group{gap:40px;padding-right:40px}.td-logo-track{animation-duration:48s}.td-logo.td-moonshine img{width:135px}.td-logo.td-daal img{width:245px;height:138px}.td-logo.td-wang img{width:130px;height:130px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.td-logo-track{animation:none;transform:none}.td-logo-group[aria-hidden]{display:none}.td-logo-window{overflow-x:auto;mask-image:none}.td-clients-heading .td-motion{display:none}.td-logo-group{padding:0 6vw;gap:40px}.td-logo{transition:none}}
+.td-logo.td-daal img{transform:translateY(14px)}
+@media(max-width:767px){.td-logo.td-daal img{transform:translateY(13px)}}
