@@ -47,9 +47,14 @@ body[data-td-header="glass"] #selected-work{scroll-margin-top:var(--header-heigh
 }
 @media(prefers-reduced-motion:reduce){body[data-td-header="glass"] #header::before{transition:none}}
 
-/* Use the supplied brush mark in the existing top-left home link. */
-body[data-td-header="glass"] #header .header-title-text:has(.td-site-logo-link){font-size:0;line-height:0}
-body[data-td-header="glass"] #header .td-site-logo-link{display:inline-flex;align-items:center;vertical-align:middle;line-height:1}
-body[data-td-header="glass"] #header .td-site-logo{display:block;width:132px!important;height:auto!important;max-width:none!important;object-fit:contain}
+/* Supplied brush mark beside the original typeface, stacked on two lines. */
+body[data-td-header="glass"] #header .td-site-logo-link{display:inline-flex;align-items:center;gap:16px;vertical-align:middle;line-height:1}
+body[data-td-header="glass"] #header .td-site-logo{display:block;flex:none;width:110px!important;height:auto!important;max-width:none!important;object-fit:contain}
+body[data-td-header="glass"] #header .td-site-wordmark{display:block;font-family:inherit;font-weight:inherit;font-size:36px;line-height:.9;letter-spacing:normal;text-align:left;white-space:nowrap}
+body[data-td-header="glass"] #header .td-site-wordmark>span{display:block}
 @media(min-width:768px){body[data-td-header="glass"] #header .header-announcement-bar-wrapper{padding-top:12px!important;padding-bottom:12px!important}}
-@media(max-width:767px){body[data-td-header="glass"] #header .td-site-logo{width:94px!important}}
+@media(max-width:767px){
+  body[data-td-header="glass"] #header .td-site-logo-link{gap:12px}
+  body[data-td-header="glass"] #header .td-site-logo{width:72px!important}
+  body[data-td-header="glass"] #header .td-site-wordmark{font-size:26px}
+}
