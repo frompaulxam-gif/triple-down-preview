@@ -44,8 +44,8 @@ html[data-td-accent='lora'] .td-statement-accent{font-family:'TDG Lora Accent',G
 @keyframes td-brand-word{from{opacity:0;clip-path:inset(0 100% 0 0);transform:translateX(24px)}to{opacity:1;clip-path:inset(0 0 0 0);transform:translateX(0)}}
 @keyframes td-brand-travel{from{transform:translate(var(--td-brand-dx),var(--td-brand-dy)) scale(var(--td-brand-scale))}to{transform:translate(0,0) scale(1)}}
 @media(max-width:767px){
-  #td-hero{--td-hero-height:max(680px,100svh);--td-headline-rest-scale:.56}
-  #td-hero .td-hero-statement{width:92%;font-size:clamp(29px,8.2vw,48px);line-height:1.12}
+  #td-hero{--td-hero-height:max(680px,100svh);--td-headline-rest-scale:.78}
+  #td-hero .td-hero-statement{width:92%;font-size:clamp(27px,7.8vw,48px);line-height:1.12}
   .td-hero-brand-reveal{gap:12px;font-size:26px}
   .td-hero-brand-reveal .td-site-logo{width:72px}
   .td-hero-brand-reveal .td-site-wordmark{font-size:26px}
