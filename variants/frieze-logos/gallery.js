@@ -1,0 +1,350 @@
+'use strict';
+
+const site = '../../assets/site/';
+const projects = [
+  {name:'Beastwang',slug:'beastwang',cover:site+'9622d6a402c2.jpg',position:'50% 50%',caption:'Underground music.\nA community built from the ground up.',category:'Music & events',description:'A Leicester-born underground dance music brand founded by Nico Singh in 2012. From intimate club nights to large multi-room events, Beastwang brings music, visual identity and a loyal community together.',focus:'Brand direction, artist booking, production, marketing and event operations.',images:['cd4618ce2ced.jpg','d44d269bda9b.jpg'],url:'https://tripledown.group/beastwang'},
+  {name:'Doppler',slug:'doppler',cover:site+'4ffd9b1ea766.jpg',position:'50% 50%',caption:'A home for underground music.\nStudio, radio and community.',category:'Venue, radio & culture',description:'An independent underground music venue, online radio station and creative space in Leicester. A physical home and a wider platform for DJs, artists, broadcasters and the people around them.',focus:'Venue operations, radio programming, events, production, branding and community.',images:['d52b62913bb3.jpg','829f55322336.jpg'],url:'https://tripledown.group/doppler'},
+  {name:'At One',slug:'at-one',cover:site+'ab90d04f9dd4.jpg',position:'50% 50%',caption:'House music, considered production.\nThe feeling of a room, made together.',category:'Music & events',description:'A Leicester house and electronic music event brand built around carefully selected line-ups, immersive production and a considered club experience. An approach shaped around the music and the people in the room.',focus:'Creative direction, event strategy, marketing, production and customer experience.',images:['a13c2b54109f.jpg','cce5c8059e5e.jpg'],url:'https://tripledown.group/at-one'},
+  {name:'Wang Records',slug:'wang-records',cover:site+'7bfd5f6e3a84.jpg',position:'50% 50%',caption:'From the dancefloor to the record.\nIndependent sounds, a shared identity.',category:'Record label',description:'An independent UK dance music label born from Beastwang. The label takes the energy, musical knowledge and community of live events into recorded releases, giving new artists and underground sounds a platform.',focus:'A&R, release strategy, art direction, artist communication and marketing.',images:['7a7e6b77f963.jpg','39b53fb83512.png'],url:'https://tripledown.group/wang-records'},
+  {name:'Audrey',slug:'audrey',cover:site+'a2c02697672f.jpg',position:'50% 50%',caption:'A bold idea, brought to life.\nHospitality with a personality.',category:'Hospitality',description:'A cocktail bar built around a distinctive identity and a complete hospitality experience. From the build and the brand to the team, drinks and customer journey, every detail helped bring Audrey to life.',focus:'Venue build, brand development, launch marketing, recruitment and operations.',images:['14a1c2a8cabc.jpg','2863087a9843.jpg'],url:'https://tripledown.group/audrey'},
+  {name:'Sophy',slug:'sophy',cover:site+'44adbbdce239.jpg',position:'50% 50%',caption:'Mood, music and a little mischief.\nA bar designed to be remembered.',category:'Hospitality',description:'Our first cocktail bar build. A local property shaped into a fun, moody and memorable venue, through interior decisions, lighting, music, visual identity and the way people move through a room.',focus:'Design, venue positioning, marketing, atmosphere and customer experience.',images:['1d6997d0f6c0.jpg','1c388d9593be.jpg'],url:'https://tripledown.group/sophy'},
+  {name:'Dig In',slug:'digin',cover:site+'d6f773a09da9.jpg',position:'50% 50%',caption:'Home-cooked food.\nA passion brought to the table.',category:'Food & content',description:'A short lockdown project built around food, branding and visual storytelling. Home-cooked food, photography, recipes and content became a way to explore a different kind of creative project.',focus:'Food photography, recipe ideas, branding and content creation.',images:['b89ce2662096.jpg','1ce589dc0f2a.jpg'],url:'https://tripledown.group/digin'},
+  {name:'Moonshine',slug:'moonshine',cover:'../frieze/assets/moonshine.jpg',position:'50% 50%',caption:'Live music, cocktails\nand late nights in Leicester.',category:'Hospitality & content',description:'A Leicester cocktail bar and live music venue. A place where the drinks, the music and the atmosphere come together, captured through the people and moments that make a night.',focus:'Hospitality, creative content and venue marketing.',images:[],url:'https://moonshineleicester.co.uk'},
+  {name:'Merchants Yard',slug:'merchants-yard',cover:'../frieze/assets/merchants-yard.webp',position:'50% 50%',caption:'Food, music and nights in the Yard.\nA gathering place with its own rhythm.',category:'Hospitality & content',description:'A gathering place for food, music and nights in the Yard. Creative content built around the setting, the people and the events that give Merchants Yard its character.',focus:'Creative content, events and venue marketing.',images:[],url:'https://merchantsyardleicester.co.uk'},
+  {name:'Daal & Bass',slug:'daal-and-bass',cover:'../frieze/assets/daal-n-bass.jpg',position:'50% 44%',caption:'South Asian music culture.\nFrom Aisle by Aisle to the dancefloor.',category:'Music & content',description:'South Asian music culture brought into unexpected spaces. From Aisle by Aisle sessions to the dancefloor, Daal & Bass brings artists, DJs and audiences together.',focus:'Music, event content and creative production.',images:[],url:null}
+];
+
+const logoFiles=['beastwang.png','doppler.png','at-one.png','wang.jpg','audrey.png','sophy.png',null,'moonshine-cream.png','merchants-yard.png','daal-bass-mark.svg'];
+projects.forEach((project,i)=>{project.logo=logoFiles[i]?'../../assets/'+logoFiles[i]:null;});
+
+const gallery = document.querySelector('#gallery');
+const stage = document.querySelector('#stage');
+const title = document.querySelector('#project-title');
+const projectBrand = document.querySelector('#project-brand');
+const caption = document.querySelector('#project-caption');
+const counter = document.querySelector('#current');
+const hint = document.querySelector('#gesture-hint');
+const dialog = document.querySelector('#project-dialog');
+const about = document.querySelector('#about-dialog');
+const reduce = matchMedia('(prefers-reduced-motion: reduce)');
+const tdgLogo=document.querySelector('#tdg-logo');
+const introGroup=document.querySelector('#brand-intro');
+const partnerRail=document.querySelector('#partner-rail');
+const introDuration=1580;
+const count = projects.length;
+const mod = (n,m) => ((n%m)+m)%m;
+let position = reduce.matches ? 0 : -24;
+let target = 0;
+let introStart = performance.now();
+let intro = !reduce.matches;
+let assetsReady = reduce.matches;
+let lastTime = introStart;
+let selected = -1;
+let cardSize = 230;
+let spacing = 280;
+let raf = 0;
+let drag = null;
+let moved = false;
+let settleTimer;
+let lastWheelDirection=0;
+let wheelAnchor=0;
+let lastWheelAt=0;
+let dialogActive = false;
+let returningFocus = null;
+let activeFlight = null;
+let flightTimer;
+let closeInProgress = false;
+
+function logoNode(project){
+  if(!project.logo){const text=document.createElement('span');text.className='logo-fallback';text.textContent=project.name;return text;}
+  const img=new Image();img.src=project.logo;img.alt=project.name;img.decoding='async';img.className='client-logo';
+  img.addEventListener('error',()=>{const text=document.createElement('span');text.className='logo-fallback';text.textContent=project.name;img.replaceWith(text);},{once:true});
+  if(project.slug==='wang-records')img.classList.add('wang-logo');
+  return img;
+}
+const introPartners=projects.filter(project=>project.logo);
+introPartners.forEach(project=>{const cell=document.createElement('div');cell.className='partner-cell';cell.append(logoNode(project));partnerRail.append(cell);});
+// A repeated final first brand lets the last upward transition land on a full mark.
+const lastCell=document.createElement('div');lastCell.className='partner-cell';lastCell.append(logoNode(introPartners[0]));partnerRail.append(lastCell);
+let introWidth=0,introHeight=0,logoDestination={x:24,y:24,scale:.633333};
+
+function logoGeometry(){
+  const bounds=document.querySelector('.wordmark').getBoundingClientRect();
+  introWidth=gallery.clientWidth;introHeight=gallery.clientHeight;
+  logoDestination={x:bounds.left,y:bounds.top,scale:bounds.width/120};
+}
+function setLogoAtRest(){
+  tdgLogo.style.transform=`translate3d(${logoDestination.x}px,${logoDestination.y}px,0) scale(${logoDestination.scale})`;
+  introGroup.hidden=true;
+  document.body.classList.remove('intro-running');
+  document.documentElement.classList.remove('intro-pending');
+}
+function drawIntro(elapsed){
+  const width=introWidth,height=introHeight;
+  const groupWidth=width<=700?Math.min(318,width-40):520;
+  const x=width/2-groupWidth/2;
+  const startScale=width<=700?100/120:210/120;
+  const y=height*.255-36*startScale;
+  const move=Math.min(1,Math.max(0,(elapsed-1090)/490));
+  const eased=1-Math.pow(1-move,4);
+  const logoX=x+(logoDestination.x-x)*eased;
+  const logoY=y+(logoDestination.y-y)*eased;
+  const scale=startScale+(logoDestination.scale-startScale)*eased;
+  tdgLogo.style.transform=`translate3d(${logoX}px,${logoY}px,0) scale(${scale})`;
+  const beats=elapsed/122;
+  const beat=Math.min(introPartners.length-1,Math.floor(beats));
+  const phase=beats-Math.floor(beats);
+  const slide=Math.min(1,Math.max(0,(phase-.38)/.62));
+  const slideEase=1-Math.pow(1-slide,3);
+  const progress=beats>=introPartners.length?introPartners.length:beat+slideEase;
+  partnerRail.style.transform=`translate3d(0,${-Math.min(introPartners.length,progress)*(width<=700?100:110)}px,0)`;
+  introGroup.style.opacity=String(1-Math.min(1,Math.max(0,(elapsed-1070)/200)));
+  if(elapsed>=introDuration)setLogoAtRest();
+}
+if(intro)document.body.classList.add('intro-running');
+else introGroup.hidden=true;
+
+const cards = projects.map((project,index) => {
+  const button=document.createElement('button');
+  button.className='project-card';
+  button.type='button';
+  button.setAttribute('aria-label',`Open ${project.name} case study`);
+  button.dataset.index=index;
+  button.tabIndex=index===0?0:-1;
+  const img=document.createElement('img');
+  img.src=project.cover;
+  img.alt=project.name;
+  img.draggable=false;
+  img.decoding='async';
+  img.style.objectPosition=project.position;
+  const fallback=document.createElement('span');fallback.className='photo-fallback';fallback.textContent=project.name;fallback.setAttribute('aria-hidden','true');
+  button.append(fallback,img);
+  const markLoaded=()=>{if(img.naturalWidth)button.classList.add('image-ready');};
+  img.addEventListener('load',markLoaded);markLoaded();
+  img.addEventListener('error',()=>{img.style.visibility='hidden';});
+  button.addEventListener('click',event => {
+    if(moved){event.preventDefault();return;}
+    openProject(index);
+  });
+  stage.append(button);
+  return button;
+});
+
+function dimensions(){
+  const width=gallery.clientWidth,height=gallery.clientHeight;
+  cardSize=width<=700?Math.min(width*.58,height*.315):Math.min(width*.155,height*.32);
+  cardSize=Math.max(155,Math.min(cardSize,340));
+  spacing=width<=700?cardSize*1.18:width*.19;
+  stage.style.setProperty('--card-size',`${cardSize}px`);
+  logoGeometry();
+  if(!intro)setLogoAtRest();
+  else if(!assetsReady)drawIntro(0);
+  requestRender();
+}
+
+function updateLabel(index){
+  if(index===selected)return;
+  selected=index;
+  title.textContent=projects[index].name;
+  projectBrand.replaceChildren(logoNode(projects[index]));
+  caption.replaceChildren(...projects[index].caption.split('\n').flatMap((line,i)=>i?[document.createElement('br'),document.createTextNode(line)]:[document.createTextNode(line)]));
+  counter.textContent=String(index+1).padStart(2,'0');
+  gallery.setAttribute('aria-label',`${projects[index].name}. Use left and right arrow keys to explore our work.`);
+  cards.forEach((card,i)=>{card.tabIndex=i===index?0:-1;card.setAttribute('aria-current',i===index?'true':'false');});
+}
+
+function render(now){
+  raf=0;
+  if(document.hidden)return;
+  const dt=Math.min(48,now-lastTime);lastTime=now;
+  const before=position;
+  if(intro){
+    const elapsed=now-introStart;
+    const t=Math.min(1,elapsed/introDuration);
+    position=-24*Math.pow(1-t,2.65);
+    drawIntro(elapsed);
+    if(t===1){intro=false;position=target=0;setLogoAtRest();}
+  }else{
+    const smoothing=reduce.matches?1:1-Math.exp(-dt/105);
+    position+=(target-position)*smoothing;
+    if(Math.abs(target-position)<.0001)position=target;
+  }
+  const speed=Math.abs(position-before)/Math.max(dt,1)*16;
+  cards.forEach((card,i)=>{
+    const distance=mod(i-position+count/2,count)-count/2;
+    const a=Math.abs(distance);
+    const visible=a<3.65;
+    card.style.visibility=visible?'visible':'hidden';
+    if(!visible)return;
+    const depth=a*22;
+    const introRotation=intro?Math.sin((now-introStart)/75)*12*Math.max(0,1-(now-introStart)/introDuration):0;
+    const yaw=Math.max(-78,Math.min(78,-distance*24))+introRotation;
+    const x=distance*spacing;
+    const scale=1+Math.min(a,3.4)*.1;
+    card.style.transform=`translate(-50%,-50%) translate3d(${x.toFixed(3)}px,0,${depth.toFixed(3)}px) rotateY(${yaw.toFixed(3)}deg) scale(${scale.toFixed(4)})`;
+    card.style.zIndex=String(20-Math.round(a*3));
+    const blur=reduce.matches?0:Math.min(intro?5:2.6,speed*1.8+Math.max(0,a-1.5)*.12);
+    card.style.filter=blur>.12?`blur(${blur.toFixed(2)}px)`:'none';
+  });
+  updateLabel(intro?0:mod(Math.round(position),count));
+  if(intro||Math.abs(target-position)>.0001||drag)requestRender();
+}
+function requestRender(){if(assetsReady&&!raf){lastTime=performance.now();raf=requestAnimationFrame(render);}}
+function interact(){
+  if(intro){intro=false;target=position;setLogoAtRest();}
+  hint.classList.add('used');
+  clearTimeout(settleTimer);
+}
+function goBy(amount){if(dialogActive)return;interact();target=Math.round(target)+amount;requestRender();}
+function settle(){settleTimer=setTimeout(()=>{
+  const nearest=Math.round(target);
+  // A single mouse-wheel notch must advance a project, while tiny trackpad
+  // movements can still return to the current photograph.
+  if(nearest===wheelAnchor&&Math.abs(target-wheelAnchor)>.14&&lastWheelDirection){
+    target=lastWheelDirection>0?Math.ceil(target):Math.floor(target);
+  }else target=nearest;
+  requestRender();
+},160);}
+
+gallery.addEventListener('wheel',event=>{
+  if(dialogActive||event.ctrlKey)return;
+  const now=performance.now();
+  if(now-lastWheelAt>190)wheelAnchor=Math.round(target);
+  lastWheelAt=now;
+  event.preventDefault();interact();
+  const raw=Math.abs(event.deltaX)>Math.abs(event.deltaY)?event.deltaX:event.deltaY;
+  lastWheelDirection=Math.sign(raw);
+  const scale=event.deltaMode===1?16:event.deltaMode===2?gallery.clientWidth:1;
+  target+=raw*scale/Math.max(spacing,190)*.68;
+  requestRender();settle();
+},{passive:false});
+
+gallery.addEventListener('pointerdown',event=>{
+  if(event.button!==0||dialogActive||event.target.closest('.gallery-footer'))return;
+  interact();moved=false;
+  drag={id:event.pointerId,startX:event.clientX,startY:event.clientY,lastX:event.clientX,lastTime:performance.now(),velocity:0,target};
+  gallery.classList.add('dragging');
+});
+gallery.addEventListener('pointermove',event=>{
+  if(!drag||event.pointerId!==drag.id)return;
+  const dx=event.clientX-drag.startX;
+  if(Math.abs(dx)>5){moved=true;gallery.setPointerCapture(event.pointerId);}
+  if(!moved)return;
+  const now=performance.now();
+  drag.velocity=(event.clientX-drag.lastX)/Math.max(now-drag.lastTime,1);
+  drag.lastX=event.clientX;drag.lastTime=now;
+  target=drag.target-dx/spacing;
+  requestRender();
+});
+function endDrag(event){
+  if(!drag||event.pointerId!==drag.id)return;
+  if(moved){target-=Math.max(-2,Math.min(2,drag.velocity*.24));target=Math.round(target);}
+  drag=null;
+  gallery.classList.remove('dragging');
+  if(gallery.hasPointerCapture(event.pointerId))gallery.releasePointerCapture(event.pointerId);
+  requestRender();
+  setTimeout(()=>{moved=false;},0);
+}
+gallery.addEventListener('pointerup',endDrag);
+gallery.addEventListener('pointercancel',endDrag);
+gallery.addEventListener('lostpointercapture',()=>{drag=null;gallery.classList.remove('dragging');});
+document.querySelector('#previous').addEventListener('click',()=>goBy(-1));
+document.querySelector('#next').addEventListener('click',()=>goBy(1));
+gallery.addEventListener('keydown',event=>{
+  if(dialogActive)return;
+  if(['ArrowRight','ArrowDown','ArrowLeft','ArrowUp','Home','End'].includes(event.key)){
+    event.preventDefault();
+    if(event.key==='Home'){interact();target=0;requestRender();}
+    else if(event.key==='End'){interact();target=count-1;requestRender();}
+    else goBy(['ArrowRight','ArrowDown'].includes(event.key)?1:-1);
+  }else if((event.key==='Enter'||event.key===' ')&&event.target===gallery){event.preventDefault();openProject(selected);}
+});
+
+function makeFlight(image,start,end,done){
+  clearTimeout(flightTimer);
+  activeFlight?.remove();
+  if(reduce.matches){done();return;}
+  const clone=image.cloneNode();
+  clone.className='flight-image';clone.alt='';clone.setAttribute('aria-hidden','true');clone.style.visibility='visible';
+  Object.assign(clone.style,{left:`${start.left}px`,top:`${start.top}px`,width:`${start.width}px`,height:`${start.height}px`});
+  dialog.append(clone);activeFlight=clone;
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    clone.style.transform=`translate(${end.left-start.left}px,${end.top-start.top}px) scale(${end.width/start.width},${end.height/start.height})`;
+  }));
+  flightTimer=setTimeout(()=>{clone.remove();if(activeFlight===clone)activeFlight=null;done();},680);
+}
+
+function openProject(index){
+  if(dialogActive||index<0)return;
+  interact();
+  const project=projects[index],card=cards[index];
+  const start=card.getBoundingClientRect();
+  target=position;
+  returningFocus=card;
+  const cover=document.querySelector('#detail-cover');
+  cover.src=project.cover;cover.alt=project.name;cover.style.objectPosition=project.position;
+  document.querySelector('#detail-title').textContent=project.name;
+  document.querySelector('#detail-category').textContent=project.category;
+  document.querySelector('#detail-description').textContent=project.description;
+  document.querySelector('#detail-focus').textContent=project.focus;
+  const link=document.querySelector('#detail-link');link.hidden=!project.url;
+  if(project.url)link.href=project.url;else link.removeAttribute('href');
+  const extra=document.querySelector('#detail-gallery');extra.replaceChildren();extra.hidden=!project.images.length;
+  project.images.forEach((src,i)=>{const img=new Image();img.src=site+src;img.alt=`${project.name} project photography ${i+1}`;img.loading='lazy';img.decoding='async';extra.append(img);});
+  dialogActive=true;dialog.showModal();dialog.scrollTop=0;
+  const end=cover.getBoundingClientRect();
+  cover.style.visibility='hidden';
+  dialog.classList.add('ready');
+  makeFlight(card.querySelector('img'),start,end,()=>{cover.style.visibility='visible';});
+  document.querySelector('#detail-close').focus({preventScroll:true});
+}
+
+function closeProject(){
+  if(!dialog.open||closeInProgress)return;
+  closeInProgress=true;
+  const cover=document.querySelector('#detail-cover');
+  const complete=()=>{
+    dialog.close();dialog.classList.remove('ready');cover.style.visibility='visible';
+    dialogActive=false;closeInProgress=false;returningFocus?.focus({preventScroll:true});requestRender();
+  };
+  if(dialog.scrollTop>100||reduce.matches){clearTimeout(flightTimer);activeFlight?.remove();activeFlight=null;complete();return;}
+  const start=cover.getBoundingClientRect(),end=returningFocus.getBoundingClientRect();
+  cover.style.visibility='hidden';
+  makeFlight(cover,start,end,complete);
+}
+document.querySelector('#detail-close').addEventListener('click',closeProject);
+dialog.addEventListener('cancel',event=>{event.preventDefault();closeProject();});
+document.querySelector('#about-open').addEventListener('click',()=>{interact();dialogActive=true;about.showModal();document.querySelector('#about-close').focus();});
+function closeAbout(){about.close();dialogActive=false;document.querySelector('#about-open').focus();requestRender();}
+document.querySelector('#about-close').addEventListener('click',closeAbout);
+about.addEventListener('cancel',event=>{event.preventDefault();closeAbout();});
+document.querySelector('.wordmark').addEventListener('click',event=>{event.preventDefault();if(dialogActive)return;interact();target=position+((count-mod(position,count))%count);requestRender();});
+addEventListener('resize',dimensions);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden){if(intro){intro=false;position=target=0;setLogoAtRest();}requestRender();}});
+reduce.addEventListener('change',()=>{if(reduce.matches){intro=false;position=target;setLogoAtRest();requestRender();}});
+dimensions();
+
+// The animation clock begins only when the actual photographs and logos can
+// paint. A slow or failed request skips the flourish rather than spinning blanks.
+async function beginWhenReady(){
+  const started=performance.now();
+  const essential=[tdgLogo,...cards.map(card=>card.querySelector('img')),...partnerRail.querySelectorAll('img')];
+  let timer;
+  const decode=image=>image.decode?image.decode().catch(()=>{}):new Promise(resolve=>{if(image.complete)resolve();else{image.addEventListener('load',resolve,{once:true});image.addEventListener('error',resolve,{once:true});}});
+  const decoded=Promise.all(essential.map(decode)).then(()=>true);
+  const allFinished=await Promise.race([decoded,new Promise(resolve=>{timer=setTimeout(()=>resolve(false),1800);})]);
+  clearTimeout(timer);
+  const allPaintable=allFinished&&essential.every(image=>image.complete&&image.naturalWidth>0);
+  cards.forEach(card=>{const image=card.querySelector('img');if(image.complete&&!image.naturalWidth)image.style.visibility='hidden';});
+  assetsReady=true;
+  document.documentElement.classList.remove('gallery-failed');
+  document.documentElement.dataset.galleryReady='true';
+  document.documentElement.dataset.assetWaitMs=String(Math.round(performance.now()-started));
+  clearTimeout(window.__tdgIntroWatchdog);
+  if(!allPaintable||reduce.matches||!intro){intro=false;position=target=0;setLogoAtRest();}
+  else{introStart=lastTime=performance.now();drawIntro(0);}
+  render(performance.now());
+  document.documentElement.classList.remove('intro-pending');
+  requestRender();
+}
+beginWhenReady();
