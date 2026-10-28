@@ -24,6 +24,8 @@ const projectBrand = document.querySelector('#project-brand');
 const caption = document.querySelector('#project-caption');
 const counter = document.querySelector('#current');
 const hint = document.querySelector('#gesture-hint');
+const motionToggle = document.querySelector('#motion-toggle');
+const projectLabel = document.querySelector('.project-label');
 const dialog = document.querySelector('#project-dialog');
 const about = document.querySelector('#about-dialog');
 const reduce = matchMedia('(prefers-reduced-motion: reduce)');
@@ -59,6 +61,7 @@ const count = projects.length;
 const mod = (n,m) => ((n%m)+m)%m;
 const introFirst=projects.findIndex(project=>project.slug==='moonshine');
 const introPasses=3,introSteps=count*introPasses,introCardTurns=3;
+const gatherStart=860,gatherDuration=1000,cardArrivalDuration=180;
 let position = reduce.matches ? 0 : introFirst;
 let target = 0;
 let introStart = performance.now();
@@ -80,6 +83,9 @@ let returningFocus = null;
 let activeFlight = null;
 let flightTimer;
 let closeInProgress = false;
+let motionPaused=reduce.matches;
+let driftVelocity=0;
+let manualUntil=0;
 
 function logoNode(project){
   if(!project.logo){const text=document.createElement('span');text.className='logo-fallback';text.textContent=project.name;return text;}
@@ -108,26 +114,39 @@ function logoGeometry(){
   logoDestination={x:bounds.left,y:bounds.top,scale:bounds.width/120};
 }
 const clamp01=value=>Math.max(0,Math.min(1,value));
-// The source opening integrates a smoothstep acceleration, a short cruise and
-// a smooth brake. One distance drives both the upward brand reel and the cards.
+// Gather every card with a modest speed increase, then accelerate immediately
+// from the last arrival. The brake ends at a positive speed, shared with idle
+// drift, so the logo's corner flight never leaves the photographs stationary.
 function introMotion(elapsed){
-  const t=(elapsed-900)/1000;
-  const initial=2.5,peak=18,ramp=2,cruise=.1,brake=.45;
-  const rawDistance=(initial+peak)*ramp/2+peak*cruise+peak*brake/2;
+  let t=Math.max(0,(elapsed-gatherStart)/1000);
+  const initial=.65,gathered=1.6,peak=18,drift=.05;
+  const gather=gatherDuration/1000,ramp=1.14,brake=1.5;
+  const phases=[[initial,gathered,gather],[gathered,peak,ramp],[peak,drift,brake]];
+  const rawDistance=phases.reduce((sum,[from,to,duration])=>sum+(from+to)*duration/2,0);
   const scale=introSteps/rawDistance;
-  let distance=0,speed=0;
-  if(t>0&&t<=ramp){
-    const q=t/ramp;
-    distance=ramp*(initial*q+(peak-initial)*(q*q*q-.5*q*q*q*q));
-    speed=initial+(peak-initial)*q*q*(3-2*q);
-  }else if(t>ramp&&t<=ramp+cruise){
-    distance=(initial+peak)*ramp/2+peak*(t-ramp);speed=peak;
-  }else if(t>ramp+cruise&&t<ramp+cruise+brake){
-    const q=(t-ramp-cruise)/brake;
-    distance=(initial+peak)*ramp/2+peak*cruise+peak*brake*(q-q*q*q+.5*q*q*q*q);
-    speed=peak*(1-q*q*(3-2*q));
-  }else if(t>=ramp+cruise+brake){distance=rawDistance;}
+  let distance=0,speed=initial;
+  for(const [from,to,duration] of phases){
+    const q=Math.min(1,t/duration);
+    distance+=duration*(from*q+(to-from)*(q*q*q-.5*q*q*q*q));
+    speed=from+(to-from)*q*q*(3-2*q);
+    if(t<=duration)break;
+    t-=duration;
+    if(to===drift)distance+=t*drift;
+  }
+  if(elapsed<gatherStart)speed=0;
   return {distance:distance*scale,speed:speed*scale,normalisedSpeed:speed/peak};
+}
+const idleSpeed=introMotion(introDuration).speed*introCardTurns;
+function cardEntrance(elapsed,rank){
+  const stagger=(gatherDuration-cardArrivalDuration)/(count-1);
+  return clamp01((elapsed-gatherStart-rank*stagger)/cardArrivalDuration);
+}
+function syncMotionControl(){
+  motionToggle.disabled=reduce.matches;
+  motionToggle.textContent=motionPaused?'▶':'Ⅱ';
+  motionToggle.setAttribute('aria-pressed',String(motionPaused));
+  const label=reduce.matches?'Motion paused for reduced motion':motionPaused?'Resume motion':'Pause motion';
+  motionToggle.setAttribute('aria-label',label);motionToggle.title=label;
 }
 // Evaluate the reference's cubic-bezier(.22,1,.36,1) on the same RAF clock.
 function lockupEase(progress){
@@ -173,7 +192,7 @@ function drawIntro(elapsed,motion=introMotion(elapsed)){
   partnerWindow.style.opacity=String(partnerEnter*(1-exit));
   partnerWindow.style.transform=`translateY(${-9*exit}px)`;
   partnerWindow.style.filter=`blur(${(3*exit).toFixed(2)}px)`;
-  partnerRail.style.transform=`translate3d(0,${-motion.distance*(mobile?80:100)}px,0)`;
+  partnerRail.style.transform=`translate3d(0,${-Math.min(introSteps,motion.distance)*(mobile?80:100)}px,0)`;
   partnerRail.style.filter=`blur(${(motion.normalisedSpeed*3.2).toFixed(2)}px)`;
   if(elapsed>=introDuration)setLogoAtRest();
 }
@@ -242,24 +261,36 @@ function render(now){
     motion=introMotion(introElapsed);
     position=introFirst+motion.distance*introCardTurns;
     drawIntro(introElapsed,motion);
-    if(introElapsed>=introDuration){intro=false;position=target=introFirst+introSteps*introCardTurns;setLogoAtRest();}
+    if(introElapsed>=introDuration){intro=false;target=position;driftVelocity=idleSpeed;setLogoAtRest();}
   }else{
-    const smoothing=reduce.matches?1:1-Math.exp(-dt/105);
-    position+=(target-position)*smoothing;
-    if(Math.abs(target-position)<.0001)position=target;
+    const focusedCard=document.activeElement?.closest('.project-card');
+    const canDrift=!reduce.matches&&!motionPaused&&!dialogActive&&!drag&&!focusedCard&&now>=manualUntil;
+    if(canDrift){
+      // Integrate the recovery to idle velocity too; never snap to a new card
+      // or reintroduce the old target after the opening / a manual gesture.
+      const seconds=dt/1000,decay=Math.exp(-seconds/.45);
+      position+=idleSpeed*seconds+(driftVelocity-idleSpeed)*.45*(1-decay);
+      driftVelocity=idleSpeed+(driftVelocity-idleSpeed)*decay;
+      target=position;
+    }else{
+      driftVelocity=0;
+      const smoothing=reduce.matches?1:1-Math.exp(-dt/105);
+      position+=(target-position)*smoothing;
+      if(Math.abs(target-position)<.0001)position=target;
+    }
   }
   const speed=Math.abs(position-before)/Math.max(dt,1)*16;
   cards.forEach((card,i)=>{
     const distance=mod(i-position+count/2,count)-count/2;
     const a=Math.abs(distance);
     const rank=mod(i-introFirst,count);
-    const arrival=intro?(rank===0?(introElapsed-860)/180:(motion.distance-rank)/.72):1;
-    const entrance=clamp01(arrival),arrived=1-Math.pow(1-entrance,3);
+    const entrance=intro?cardEntrance(introElapsed,rank):1,arrived=1-Math.pow(1-entrance,3);
     const visible=a<3.65&&entrance>0;
     card.style.visibility=visible?'visible':'hidden';
     card.style.opacity=String(Math.min(1,entrance*3));
     if(!visible)return;
-    const spread=intro ? .26+.74*clamp01(motion.distance/(count*2-.28)) : 1;
+    const gatherProgress=clamp01((introElapsed-gatherStart)/gatherDuration);
+    const spread=intro ? .26+.74*gatherProgress*gatherProgress*(3-2*gatherProgress) : 1;
     const depth=a*22*spread;
     const yaw=Math.max(-78,Math.min(78,-distance*24));
     const x=distance*spacing*spread;
@@ -290,12 +321,16 @@ function render(now){
       filterLevels[i]=filterKey;
     }
   });
+  projectLabel.setAttribute('aria-live',now<manualUntil?'polite':'off');
   updateLabel(intro?introFirst:mod(Math.round(position),count));
-  if(intro||Math.abs(target-position)>.0001||drag)requestRender();
+  const ambientPending=!reduce.matches&&!motionPaused&&!dialogActive&&!document.activeElement?.closest('.project-card');
+  if(intro||ambientPending||Math.abs(target-position)>.0001||drag)requestRender(true);
 }
-function requestRender(){if(assetsReady&&!raf){lastTime=performance.now();raf=requestAnimationFrame(render);}}
+function requestRender(continuing=false){if(assetsReady&&!raf){if(!continuing)lastTime=performance.now();raf=requestAnimationFrame(render);}}
 function interact(){
   if(intro){intro=false;target=position;setLogoAtRest();}
+  driftVelocity=0;
+  manualUntil=performance.now()+1800;
   hint.classList.add('used');
   clearTimeout(settleTimer);
 }
@@ -337,11 +372,13 @@ gallery.addEventListener('pointermove',event=>{
   const now=performance.now();
   drag.velocity=(event.clientX-drag.lastX)/Math.max(now-drag.lastTime,1);
   drag.lastX=event.clientX;drag.lastTime=now;
+  manualUntil=now+1800;
   target=drag.target-dx/spacing;
   requestRender();
 });
 function endDrag(event){
   if(!drag||event.pointerId!==drag.id)return;
+  manualUntil=performance.now()+1800;
   if(moved){target-=Math.max(-2,Math.min(2,drag.velocity*.24));target=Math.round(target);}
   drag=null;
   gallery.classList.remove('dragging');
@@ -351,9 +388,19 @@ function endDrag(event){
 }
 gallery.addEventListener('pointerup',endDrag);
 gallery.addEventListener('pointercancel',endDrag);
-gallery.addEventListener('lostpointercapture',()=>{drag=null;gallery.classList.remove('dragging');});
+gallery.addEventListener('lostpointercapture',()=>{drag=null;manualUntil=performance.now()+1800;gallery.classList.remove('dragging');requestRender();});
 document.querySelector('#previous').addEventListener('click',()=>goBy(-1));
 document.querySelector('#next').addEventListener('click',()=>goBy(1));
+motionToggle.addEventListener('click',()=>{
+  if(reduce.matches)return;
+  if(intro){intro=false;setLogoAtRest();}
+  motionPaused=!motionPaused;driftVelocity=0;target=position;manualUntil=0;
+  clearTimeout(settleTimer);syncMotionControl();requestRender();
+});
+gallery.addEventListener('focusin',event=>{
+  if(event.target.closest('.project-card')){interact();target=position;requestRender();}
+});
+gallery.addEventListener('focusout',()=>requestRender());
 gallery.addEventListener('keydown',event=>{
   if(dialogActive)return;
   if(['ArrowRight','ArrowDown','ArrowLeft','ArrowUp','Home','End'].includes(event.key)){
@@ -424,8 +471,17 @@ document.querySelector('#about-close').addEventListener('click',closeAbout);
 about.addEventListener('cancel',event=>{event.preventDefault();closeAbout();});
 document.querySelector('.wordmark').addEventListener('click',event=>{event.preventDefault();if(dialogActive)return;interact();target=position+((count-mod(position,count))%count);requestRender();});
 addEventListener('resize',dimensions);
-document.addEventListener('visibilitychange',()=>{if(!document.hidden){if(intro){intro=false;position=target=0;setLogoAtRest();}requestRender();}});
-reduce.addEventListener('change',()=>{if(reduce.matches){intro=false;position=target;setLogoAtRest();requestRender();}});
+document.addEventListener('visibilitychange',()=>{
+  if(!document.hidden){
+    if(intro){intro=false;target=position;driftVelocity=0;setLogoAtRest();}
+    requestRender();
+  }
+});
+reduce.addEventListener('change',()=>{
+  if(reduce.matches){intro=false;target=position;motionPaused=true;driftVelocity=0;setLogoAtRest();}
+  syncMotionControl();requestRender();
+});
+syncMotionControl();
 dimensions();
 
 async function warmFirstPaint(){
