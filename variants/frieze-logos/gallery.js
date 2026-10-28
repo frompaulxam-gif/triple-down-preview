@@ -30,6 +30,28 @@ const reduce = matchMedia('(prefers-reduced-motion: reduce)');
 const tdgLogo=document.querySelector('#tdg-logo');
 const introGroup=document.querySelector('#brand-intro');
 const partnerRail=document.querySelector('#partner-rail');
+// The reference uses a horizontal optical smear: red and blue shift in
+// opposite directions around a shared, horizontally blurred green channel.
+// Fixed filter levels avoid rebuilding SVG primitives on every animation frame.
+const photoFilters=document.createElementNS('http://www.w3.org/2000/svg','svg');
+photoFilters.classList.add('photo-filters');
+photoFilters.setAttribute('width','0');photoFilters.setAttribute('height','0');
+photoFilters.setAttribute('aria-hidden','true');photoFilters.setAttribute('focusable','false');
+photoFilters.innerHTML='<defs>'+Array.from({length:17},(_,i)=>{
+  const level=i+1,strength=Math.pow(level/17,1.15);
+  const blur=(16*strength).toFixed(5),offset=(13*strength).toFixed(5);
+  return `<filter id="tdg-photo-smear-${level}" x="-45%" y="-30%" width="190%" height="160%" color-interpolation-filters="sRGB">
+    <feGaussianBlur in="SourceGraphic" stdDeviation="${blur} 0" result="soft"/>
+    <feOffset in="soft" dx="-${offset}" dy="0" result="red-offset"/>
+    <feColorMatrix in="red-offset" type="matrix" values="1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0" result="red"/>
+    <feOffset in="soft" dx="${offset}" dy="0" result="blue-offset"/>
+    <feColorMatrix in="blue-offset" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 1 0" result="blue"/>
+    <feColorMatrix in="soft" type="matrix" values="0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 1 0" result="green"/>
+    <feBlend in="red" in2="green" mode="screen" result="red-green"/>
+    <feBlend in="red-green" in2="blue" mode="screen"/>
+  </filter>`;
+}).join('')+'</defs>';
+document.body.prepend(photoFilters);
 const introDuration=1580;
 const count = projects.length;
 const mod = (n,m) => ((n%m)+m)%m;
@@ -57,7 +79,7 @@ let closeInProgress = false;
 
 function logoNode(project){
   if(!project.logo){const text=document.createElement('span');text.className='logo-fallback';text.textContent=project.name;return text;}
-  const img=new Image();img.src=project.logo;img.alt=project.name;img.decoding='async';img.className='client-logo';
+  const img=new Image();img.src=project.logo;img.alt=project.name;img.decoding='sync';img.className='client-logo';
   img.addEventListener('error',()=>{const text=document.createElement('span');text.className='logo-fallback';text.textContent=project.name;img.replaceWith(text);},{once:true});
   if(project.slug==='wang-records')img.classList.add('wang-logo');
   return img;
@@ -115,7 +137,7 @@ const cards = projects.map((project,index) => {
   img.src=project.cover;
   img.alt=project.name;
   img.draggable=false;
-  img.decoding='async';
+  img.decoding='sync';
   img.style.objectPosition=project.position;
   const fallback=document.createElement('span');fallback.className='photo-fallback';fallback.textContent=project.name;fallback.setAttribute('aria-hidden','true');
   button.append(fallback,img);
@@ -129,6 +151,8 @@ const cards = projects.map((project,index) => {
   stage.append(button);
   return button;
 });
+const cardImages=cards.map(card=>card.querySelector('img'));
+const filterLevels=Array(count).fill(-1);
 
 function dimensions(){
   const width=gallery.clientWidth,height=gallery.clientHeight;
@@ -183,8 +207,17 @@ function render(now){
     const scale=1+Math.min(a,3.4)*.1;
     card.style.transform=`translate(-50%,-50%) translate3d(${x.toFixed(3)}px,0,${depth.toFixed(3)}px) rotateY(${yaw.toFixed(3)}deg) scale(${scale.toFixed(4)})`;
     card.style.zIndex=String(20-Math.round(a*3));
-    const blur=reduce.matches?0:Math.min(intro?5:2.6,speed*1.8+Math.max(0,a-1.5)*.12);
-    card.style.filter=blur>.12?`blur(${blur.toFixed(2)}px)`:'none';
+    const speedContribution=Math.min(intro?17:6,speed*(intro?24:18));
+    const filterLevel=reduce.matches?0:Math.max(0,Math.min(17,Math.round(Math.max(0,(a-1.45)*7)+speedContribution)));
+    // The rapid opening uses a small native blur so new photographs do not
+    // compete with first-use multi-pass SVG rasterisation. The settled and
+    // interactive gallery keeps the verified reference optical filter intact.
+    const introBlur=Math.min(2,speed*.8).toFixed(1);
+    const filterKey=intro&&!reduce.matches?`intro-${introBlur}`:filterLevel;
+    if(filterLevels[i]!==filterKey){
+      cardImages[i].style.filter=intro&&!reduce.matches?`blur(${introBlur}px)`:(filterLevel?`url("#tdg-photo-smear-${filterLevel}")`:'none');
+      filterLevels[i]=filterKey;
+    }
   });
   updateLabel(intro?0:mod(Math.round(position),count));
   if(intro||Math.abs(target-position)>.0001||drag)requestRender();
@@ -265,7 +298,7 @@ function makeFlight(image,start,end,done){
   activeFlight?.remove();
   if(reduce.matches){done();return;}
   const clone=image.cloneNode();
-  clone.className='flight-image';clone.alt='';clone.setAttribute('aria-hidden','true');clone.style.visibility='visible';
+  clone.className='flight-image';clone.alt='';clone.setAttribute('aria-hidden','true');clone.style.visibility='visible';clone.style.filter='none';
   Object.assign(clone.style,{left:`${start.left}px`,top:`${start.top}px`,width:`${start.width}px`,height:`${start.height}px`});
   dialog.append(clone);activeFlight=clone;
   requestAnimationFrame(()=>requestAnimationFrame(()=>{
@@ -324,6 +357,25 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden){if(intro)
 reduce.addEventListener('change',()=>{if(reduce.matches){intro=false;position=target;setLogoAtRest();requestRender();}});
 dimensions();
 
+async function warmFirstPaint(){
+  if(!intro||reduce.matches||document.hidden)return;
+  const unit=Math.min(cardSize,gallery.clientWidth/6,gallery.clientHeight/5);
+  cards.forEach((card,i)=>{
+    card.style.visibility='visible';
+    card.style.transform=`translate(-50%,-50%) translate3d(${(i%5-2)*unit}px,${(Math.floor(i/5)-.5)*unit}px,0) scale(${unit/cardSize})`;
+    cardImages[i].style.filter='blur(1px)';
+  });
+  document.documentElement.classList.add('intro-warmup');
+  let timer;
+  await Promise.race([
+    new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))),
+    new Promise(resolve=>{timer=setTimeout(resolve,120);})
+  ]);
+  clearTimeout(timer);
+  document.documentElement.classList.remove('intro-warmup');
+  filterLevels.fill(-1);
+}
+
 // The animation clock begins only when the actual photographs and logos can
 // paint. A slow or failed request skips the flourish rather than spinning blanks.
 async function beginWhenReady(){
@@ -336,6 +388,7 @@ async function beginWhenReady(){
   clearTimeout(timer);
   const allPaintable=allFinished&&essential.every(image=>image.complete&&image.naturalWidth>0);
   cards.forEach(card=>{const image=card.querySelector('img');if(image.complete&&!image.naturalWidth)image.style.visibility='hidden';});
+  if(allPaintable)await warmFirstPaint();
   assetsReady=true;
   document.documentElement.classList.remove('gallery-failed');
   document.documentElement.dataset.galleryReady='true';
