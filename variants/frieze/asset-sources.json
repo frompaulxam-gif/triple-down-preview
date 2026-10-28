@@ -1,0 +1,6 @@
+{
+  "existing_projects": "../../asset-manifest.json",
+  "moonshine.jpg": {"source":"/Users/paulventura/TDG/moonshine/new-website/static/img/hero-bar.jpg","description":"Moonshine bar interior, existing website photograph"},
+  "merchants-yard.webp": {"source":"/Users/paulventura/Websites/Merchants Yard/dist/assets/tipi.webp","description":"Merchants Yard tipi, sourced from DSCF0775.jpeg in its maintained asset registry"},
+  "daal-n-bass.jpg": {"source":"/Users/paulventura/Downloads/daalnbass-grade-test/stills/4_B2_bally_bright_53.jpg","description":"Actual Daal & Bass session footage still, vocalist with microphone and DJ in supermarket aisle"}
+}
