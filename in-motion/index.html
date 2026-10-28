@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#020106">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Triple Down — In Motion</title>
+  <meta name="description" content="Triple Down is a growth partner for hospitality, events and culture. Explore the work behind the brands.">
+  <script>
+    if(!matchMedia('(prefers-reduced-motion: reduce)').matches)document.documentElement.classList.add('intro-pending');
+    window.__tdgIntroWatchdog=setTimeout(function(){if(!document.documentElement.dataset.galleryReady){document.documentElement.classList.remove('intro-pending');document.documentElement.classList.add('gallery-failed');}},4000);
+  </script>
+  <link rel="preload" as="image" href="../assets/triple-down-logo-vector.svg" fetchpriority="high">
+  <link rel="preload" as="image" href="../assets/site/9622d6a402c2.jpg">
+  <link rel="preload" as="image" href="../assets/site/4ffd9b1ea766.jpg">
+  <link rel="preload" as="image" href="../assets/site/ab90d04f9dd4.jpg">
+  <link rel="preload" as="image" href="../assets/site/7bfd5f6e3a84.jpg">
+  <link rel="preload" as="image" href="../assets/site/a2c02697672f.jpg">
+  <link rel="preload" as="image" href="../assets/site/44adbbdce239.jpg">
+  <link rel="preload" as="image" href="../assets/site/d6f773a09da9.jpg">
+  <link rel="preload" as="image" href="../variants/frieze/assets/moonshine.jpg">
+  <link rel="preload" as="image" href="../variants/frieze/assets/merchants-yard.webp">
+  <link rel="preload" as="image" href="../variants/frieze/assets/daal-n-bass.jpg">
+  <link rel="preload" as="image" href="../assets/beastwang.png">
+  <link rel="preload" as="image" href="../assets/doppler.png">
+  <link rel="preload" as="image" href="../assets/at-one.png">
+  <link rel="preload" as="image" href="../assets/wang.jpg">
+  <link rel="preload" as="image" href="../assets/audrey.png">
+  <link rel="preload" as="image" href="../assets/sophy.png">
+  <link rel="preload" as="image" href="../assets/moonshine-cream.png">
+  <link rel="preload" as="image" href="assets/moonshine-wordmark.png">
+  <link rel="preload" as="image" href="../assets/merchants-yard.png">
+  <link rel="preload" as="image" href="../assets/daal-bass-mark.svg">
+  <link rel="stylesheet" href="style.css">
+  <script src="gallery.js?v=smooth-continuous-2" defer></script>
+</head>
+<body>
+  <a class="skip" href="#gallery">Skip to our work</a>
+  <header class="masthead">
+    <a class="wordmark" href="#" aria-label="Triple Down home"><img id="tdg-logo" class="tdg-logo" src="../assets/triple-down-logo-vector.svg" alt="Triple Down" decoding="sync"></a>
+    <nav aria-label="Main navigation">
+      <button class="nav-link" id="about-open">About us</button>
+      <a class="nav-link" href="mailto:nico@tripledown.group">Get in touch</a>
+    </nav>
+  </header>
+  <div class="brand-intro" id="brand-intro" aria-hidden="true"><span class="intro-times">×</span><div class="partner-window"><div class="partner-rail" id="partner-rail"></div></div></div>
+  <main>
+    <section class="gallery" id="gallery" tabindex="0" aria-label="Our work. Use left and right arrow keys to explore.">
+      <div class="project-label" aria-live="off" aria-atomic="true">
+        <h1 id="project-title" class="sr-only">Beastwang</h1>
+        <div class="project-brand" id="project-brand" aria-hidden="true"></div>
+        <p id="project-caption">Underground music.<br>A community built from the ground up.</p>
+      </div>
+      <div class="stage" id="stage" aria-label="Case study gallery"></div>
+      <div class="gallery-footer">
+        <p class="counter"><span id="current">01</span><span class="counter-slash">/</span><span>10</span></p>
+        <p class="gesture-hint" id="gesture-hint">Scroll or drag to explore</p>
+        <div class="gallery-arrows" aria-label="Gallery controls">
+          <button id="motion-toggle" aria-label="Pause motion" aria-pressed="false" title="Pause motion">Ⅱ</button>
+          <button id="previous" aria-label="Previous project">←</button>
+          <button id="next" aria-label="Next project">→</button>
+        </div>
+      </div>
+    </section>
+  </main>
+  <dialog class="project-dialog" id="project-dialog" aria-labelledby="detail-title">
+    <button class="close" id="detail-close" aria-label="Close case study">Close <span aria-hidden="true">×</span></button>
+    <div class="detail-layout">
+      <div class="detail-visual"><img id="detail-cover" alt=""></div>
+      <div class="detail-copy">
+        <p class="detail-category" id="detail-category"></p>
+        <h2 id="detail-title"></h2>
+        <p class="detail-description" id="detail-description"></p>
+        <dl class="project-facts"><div><dt>Focus</dt><dd id="detail-focus"></dd></div></dl>
+        <a id="detail-link" class="text-link" target="_blank" rel="noopener">Explore the full project</a>
+      </div>
+    </div>
+    <div class="detail-gallery" id="detail-gallery"></div>
+    <footer class="detail-footer"><p>Make your next move.</p><a href="mailto:nico@tripledown.group">Let’s talk.</a></footer>
+  </dialog>
+  <dialog class="about-dialog" id="about-dialog" aria-labelledby="about-title">
+    <button class="close" id="about-close" aria-label="Close about us">Close <span aria-hidden="true">×</span></button>
+    <p class="about-brand">Triple Down</p>
+    <h2 id="about-title">Culture-led.<br>Built to scale.</h2>
+    <p>We’re a growth partner for hospitality, events and culture. Operators first, with hands-on experience building brands, running venues and bringing people together.</p>
+    <p>From the first idea to the feeling in the room. Creative direction, marketing and the work behind the scenes.</p>
+    <a class="about-contact" href="mailto:nico@tripledown.group">nico@tripledown.group</a>
+  </dialog>
+  <div class="runtime-fallback"><p>Culture-led. Built to scale.</p><a href="https://tripledown.group">Explore our work</a><a href="mailto:nico@tripledown.group">nico@tripledown.group</a></div>
+  <noscript><div class="no-script"><h1>Triple Down</h1><p>Culture-led. Built to scale.</p><p><a href="https://tripledown.group">Explore our work</a></p><p><a href="mailto:nico@tripledown.group">nico@tripledown.group</a></p></div></noscript>
+</body>
+</html>
