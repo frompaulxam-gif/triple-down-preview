@@ -71,3 +71,25 @@ dialog{color:var(--ink);background:var(--paper);border:0;padding:0;margin:0;max-
 .intro-warmup .partner-rail{display:grid;grid-template-columns:repeat(5,40px);width:200px;transform:none!important}
 .intro-warmup .partner-cell{width:40px;height:40px;padding:2px}
 .intro-warmup .partner-cell .client-logo{width:36px!important;height:36px!important}
+
+/* The selected accelerating opening shares its clock with the photo strip. */
+.brand-intro{inset:0;width:100%;height:100%;transform:none}
+.intro-times{left:calc(50% - 17px);top:calc(29% - 22px);transform:none;font-size:27px;line-height:44px}
+.partner-window{left:calc(50% + 34px);right:auto;top:calc(29% - 50px);width:190px;height:100px}
+.partner-cell{width:190px;height:100px;padding:0}
+.partner-cell .client-logo{width:auto;height:auto;max-width:170px;max-height:75px;object-position:center}
+.partner-cell .wang-logo{width:75px;height:75px}
+.partner-cell .logo-fallback{font-size:39px;white-space:nowrap}
+.intro-pending .tdg-logo{transform:translate3d(calc(50vw - 105px),calc(29svh - 63px),0) scale(1.75);opacity:0}
+@media(max-width:700px){
+  .intro-times{left:calc(50% - 8px);top:calc(29% - 22px);font-size:22px}
+  .partner-window{left:calc(50% + 21px);top:calc(29% - 40px);width:128px;height:80px}
+  .partner-cell{width:128px;height:80px}
+  .partner-cell .client-logo{max-width:115px;max-height:54px}
+  .partner-cell .wang-logo{width:54px;height:54px}
+  .partner-cell .logo-fallback{font-size:28px}
+  .intro-pending .tdg-logo{transform:translate3d(calc(50vw - 52px),calc(29svh - 31.2px),0) scale(.866667)}
+}
+.intro-warmup .partner-window,.intro-warmup .intro-times{opacity:1!important;filter:none!important}
+
+.partner-cell .moonshine-intro-logo{filter:grayscale(1) contrast(4);mix-blend-mode:screen}

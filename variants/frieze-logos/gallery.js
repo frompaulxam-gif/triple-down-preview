@@ -30,6 +30,8 @@ const reduce = matchMedia('(prefers-reduced-motion: reduce)');
 const tdgLogo=document.querySelector('#tdg-logo');
 const introGroup=document.querySelector('#brand-intro');
 const partnerRail=document.querySelector('#partner-rail');
+const introCross=introGroup.querySelector('.intro-times');
+const partnerWindow=introGroup.querySelector('.partner-window');
 // The reference uses a horizontal optical smear: red and blue shift in
 // opposite directions around a shared, horizontally blurred green channel.
 // Fixed filter levels avoid rebuilding SVG primitives on every animation frame.
@@ -52,10 +54,12 @@ photoFilters.innerHTML='<defs>'+Array.from({length:17},(_,i)=>{
   </filter>`;
 }).join('')+'</defs>';
 document.body.prepend(photoFilters);
-const introDuration=1580;
+const introDuration=4500;
 const count = projects.length;
 const mod = (n,m) => ((n%m)+m)%m;
-let position = reduce.matches ? 0 : -24;
+const introFirst=projects.findIndex(project=>project.slug==='moonshine');
+const introPasses=3,introSteps=count*introPasses,introCardTurns=3;
+let position = reduce.matches ? 0 : introFirst;
 let target = 0;
 let introStart = performance.now();
 let intro = !reduce.matches;
@@ -84,10 +88,18 @@ function logoNode(project){
   if(project.slug==='wang-records')img.classList.add('wang-logo');
   return img;
 }
-const introPartners=projects.filter(project=>project.logo);
-introPartners.forEach(project=>{const cell=document.createElement('div');cell.className='partner-cell';cell.append(logoNode(project));partnerRail.append(cell);});
-// A repeated final first brand lets the last upward transition land on a full mark.
-const lastCell=document.createElement('div');lastCell.className='partner-cell';lastCell.append(logoNode(introPartners[0]));partnerRail.append(lastCell);
+// Match the selected opening: Moonshine leads three full turns through all ten
+// brands, including the honest Dig In text fallback, and closes the reel again.
+const introPartners=Array.from({length:count},(_,i)=>projects[mod(i+introFirst,count)]);
+const introSequence=[...Array.from({length:introPasses},()=>introPartners).flat(),introPartners[0]];
+introSequence.forEach(project=>{
+  const cell=document.createElement('div');cell.className='partner-cell';
+  const isMoonshine=project.slug==='moonshine';
+  const mark=logoNode(isMoonshine?{...project,logo:'assets/moonshine-wordmark.png'}:project);
+  if(isMoonshine)mark.classList.add('moonshine-intro-logo');
+  cell.append(mark);partnerRail.append(cell);
+});
+partnerRail.dataset.cycles=String(introPasses);partnerRail.dataset.steps=String(introSteps);
 let introWidth=0,introHeight=0,logoDestination={x:24,y:24,scale:.633333};
 
 function logoGeometry(){
@@ -95,32 +107,74 @@ function logoGeometry(){
   introWidth=gallery.clientWidth;introHeight=gallery.clientHeight;
   logoDestination={x:bounds.left,y:bounds.top,scale:bounds.width/120};
 }
+const clamp01=value=>Math.max(0,Math.min(1,value));
+// The source opening integrates a smoothstep acceleration, a short cruise and
+// a smooth brake. One distance drives both the upward brand reel and the cards.
+function introMotion(elapsed){
+  const t=(elapsed-900)/1000;
+  const initial=2.5,peak=18,ramp=2,cruise=.1,brake=.45;
+  const rawDistance=(initial+peak)*ramp/2+peak*cruise+peak*brake/2;
+  const scale=introSteps/rawDistance;
+  let distance=0,speed=0;
+  if(t>0&&t<=ramp){
+    const q=t/ramp;
+    distance=ramp*(initial*q+(peak-initial)*(q*q*q-.5*q*q*q*q));
+    speed=initial+(peak-initial)*q*q*(3-2*q);
+  }else if(t>ramp&&t<=ramp+cruise){
+    distance=(initial+peak)*ramp/2+peak*(t-ramp);speed=peak;
+  }else if(t>ramp+cruise&&t<ramp+cruise+brake){
+    const q=(t-ramp-cruise)/brake;
+    distance=(initial+peak)*ramp/2+peak*cruise+peak*brake*(q-q*q*q+.5*q*q*q*q);
+    speed=peak*(1-q*q*(3-2*q));
+  }else if(t>=ramp+cruise+brake){distance=rawDistance;}
+  return {distance:distance*scale,speed:speed*scale,normalisedSpeed:speed/peak};
+}
+// Evaluate the reference's cubic-bezier(.22,1,.36,1) on the same RAF clock.
+function lockupEase(progress){
+  const p=clamp01(progress);
+  if(p===0||p===1)return p;
+  let u=p;
+  for(let i=0;i<5;i++){
+    const x=3*(1-u)*(1-u)*u*.22+3*(1-u)*u*u*.36+u*u*u;
+    const dx=.66*(1-u)*(1-u)+.84*(1-u)*u+1.92*u*u;
+    u=clamp01(u-(x-p)/dx);
+  }
+  return 1-Math.pow(1-u,3);
+}
 function setLogoAtRest(){
   tdgLogo.style.transform=`translate3d(${logoDestination.x}px,${logoDestination.y}px,0) scale(${logoDestination.scale})`;
+  tdgLogo.style.opacity='1';tdgLogo.style.filter='brightness(0) invert(1)';
   introGroup.hidden=true;
   document.body.classList.remove('intro-running');
   document.documentElement.classList.remove('intro-pending');
 }
-function drawIntro(elapsed){
-  const width=introWidth,height=introHeight;
-  const groupWidth=width<=700?Math.min(318,width-40):520;
-  const x=width/2-groupWidth/2;
-  const startScale=width<=700?100/120:210/120;
-  const y=height*.255-36*startScale;
-  const move=Math.min(1,Math.max(0,(elapsed-1090)/490));
-  const eased=1-Math.pow(1-move,4);
-  const logoX=x+(logoDestination.x-x)*eased;
-  const logoY=y+(logoDestination.y-y)*eased;
-  const scale=startScale+(logoDestination.scale-startScale)*eased;
-  tdgLogo.style.transform=`translate3d(${logoX}px,${logoY}px,0) scale(${scale})`;
-  const beats=elapsed/122;
-  const beat=Math.min(introPartners.length-1,Math.floor(beats));
-  const phase=beats-Math.floor(beats);
-  const slide=Math.min(1,Math.max(0,(phase-.38)/.62));
-  const slideEase=1-Math.pow(1-slide,3);
-  const progress=beats>=introPartners.length?introPartners.length:beat+slideEase;
-  partnerRail.style.transform=`translate3d(0,${-Math.min(introPartners.length,progress)*(width<=700?100:110)}px,0)`;
-  introGroup.style.opacity=String(1-Math.min(1,Math.max(0,(elapsed-1070)/200)));
+function drawIntro(elapsed,motion=introMotion(elapsed)){
+  const width=introWidth,height=introHeight,mobile=width<=700;
+  const startScale=(mobile?104:210)/120;
+  const centreX=width/2-60*startScale;
+  const centreY=height*.29-36*startScale;
+  const entrance=1-Math.pow(1-clamp01(elapsed/250),3);
+  const shift=lockupEase((elapsed-380)/380);
+  const flight=lockupEase((elapsed-3900)/600);
+  const leftX=centreX-(mobile?80:130)*shift;
+  const x=leftX+(logoDestination.x-leftX)*flight;
+  const y=centreY+8*(1-entrance)+(logoDestination.y-centreY)*flight;
+  const scale=startScale*(.9+.1*entrance)+(logoDestination.scale-startScale)*flight;
+  tdgLogo.style.transform=`translate3d(${x}px,${y}px,0) scale(${scale})`;
+  tdgLogo.style.opacity=String(entrance);
+  tdgLogo.style.filter=`brightness(0) invert(1) blur(${(7*(1-entrance)).toFixed(2)}px)`;
+  const exit=1-Math.pow(1-clamp01((elapsed-3500)/240),3);
+  const crossEnter=1-Math.pow(1-clamp01((elapsed-720)/140),3);
+  const partnerEnter=1-Math.pow(1-clamp01((elapsed-800)/60),3);
+  introGroup.style.opacity='1';
+  introCross.style.opacity=String(crossEnter*(1-exit));
+  introCross.style.transform=`translate(${-8*(1-crossEnter)}px,${-5*exit}px)`;
+  introCross.style.filter=`blur(${(motion.normalisedSpeed*.8).toFixed(2)}px)`;
+  partnerWindow.style.opacity=String(partnerEnter*(1-exit));
+  partnerWindow.style.transform=`translateY(${-9*exit}px)`;
+  partnerWindow.style.filter=`blur(${(3*exit).toFixed(2)}px)`;
+  partnerRail.style.transform=`translate3d(0,${-motion.distance*(mobile?80:100)}px,0)`;
+  partnerRail.style.filter=`blur(${(motion.normalisedSpeed*3.2).toFixed(2)}px)`;
   if(elapsed>=introDuration)setLogoAtRest();
 }
 if(intro)document.body.classList.add('intro-running');
@@ -182,12 +236,13 @@ function render(now){
   if(document.hidden)return;
   const dt=Math.min(48,now-lastTime);lastTime=now;
   const before=position;
+  let introElapsed=Infinity,motion=null;
   if(intro){
-    const elapsed=now-introStart;
-    const t=Math.min(1,elapsed/introDuration);
-    position=-24*Math.pow(1-t,2.65);
-    drawIntro(elapsed);
-    if(t===1){intro=false;position=target=0;setLogoAtRest();}
+    introElapsed=Math.max(0,now-introStart);
+    motion=introMotion(introElapsed);
+    position=introFirst+motion.distance*introCardTurns;
+    drawIntro(introElapsed,motion);
+    if(introElapsed>=introDuration){intro=false;position=target=introFirst+introSteps*introCardTurns;setLogoAtRest();}
   }else{
     const smoothing=reduce.matches?1:1-Math.exp(-dt/105);
     position+=(target-position)*smoothing;
@@ -197,29 +252,45 @@ function render(now){
   cards.forEach((card,i)=>{
     const distance=mod(i-position+count/2,count)-count/2;
     const a=Math.abs(distance);
-    const visible=a<3.65;
+    const rank=mod(i-introFirst,count);
+    const arrival=intro?(rank===0?(introElapsed-860)/180:(motion.distance-rank)/.72):1;
+    const entrance=clamp01(arrival),arrived=1-Math.pow(1-entrance,3);
+    const visible=a<3.65&&entrance>0;
     card.style.visibility=visible?'visible':'hidden';
+    card.style.opacity=String(Math.min(1,entrance*3));
     if(!visible)return;
-    const depth=a*22;
-    const introRotation=intro?Math.sin((now-introStart)/75)*12*Math.max(0,1-(now-introStart)/introDuration):0;
-    const yaw=Math.max(-78,Math.min(78,-distance*24))+introRotation;
-    const x=distance*spacing;
-    const scale=1+Math.min(a,3.4)*.1;
-    card.style.transform=`translate(-50%,-50%) translate3d(${x.toFixed(3)}px,0,${depth.toFixed(3)}px) rotateY(${yaw.toFixed(3)}deg) scale(${scale.toFixed(4)})`;
+    const spread=intro ? .26+.74*clamp01(motion.distance/(count*2-.28)) : 1;
+    const depth=a*22*spread;
+    const yaw=Math.max(-78,Math.min(78,-distance*24));
+    const x=distance*spacing*spread;
+    const scale=(1+Math.min(a,3.4)*.1)*(intro?(.88+.12*arrived)*(.5+.5*spread):1);
+    let y=0;
+    if(intro){
+      // Keep entering photographs below the lockup, including their tallest
+      // projected corner. Release this guard as the TDG mark joins the header.
+      const mobile=introWidth<=700,perspective=mobile?1000:1300;
+      const originY=introHeight*(mobile?.54:.52);
+      const centreY=introHeight*(mobile?.57:introHeight<=590?.6:.55);
+      const lockupBottom=introHeight*.29+(mobile?50:65)+12;
+      const nearDepth=depth+cardSize*.5*scale*Math.abs(Math.sin(yaw*Math.PI/180));
+      const minimumY=originY+(lockupBottom-originY)*(1-nearDepth/perspective)-centreY+cardSize*.95*scale*.5;
+      y=Math.max(-(1-arrived)*64,minimumY)*(1-lockupEase((introElapsed-3900)/600));
+    }
+    card.style.transform=`translate(-50%,-50%) translate3d(${x.toFixed(3)}px,${y.toFixed(3)}px,${depth.toFixed(3)}px) rotateY(${yaw.toFixed(3)}deg) scale(${scale.toFixed(4)})`;
     card.style.zIndex=String(20-Math.round(a*3));
     const speedContribution=Math.min(intro?17:6,speed*(intro?24:18));
     const filterLevel=reduce.matches?0:Math.max(0,Math.min(17,Math.round(Math.max(0,(a-1.45)*7)+speedContribution)));
     // The rapid opening uses a small native blur so new photographs do not
     // compete with first-use multi-pass SVG rasterisation. The settled and
     // interactive gallery keeps the verified reference optical filter intact.
-    const introBlur=Math.min(2,speed*.8).toFixed(1);
+    const introBlur=(motion?motion.normalisedSpeed*2:0).toFixed(1);
     const filterKey=intro&&!reduce.matches?`intro-${introBlur}`:filterLevel;
     if(filterLevels[i]!==filterKey){
       cardImages[i].style.filter=intro&&!reduce.matches?`blur(${introBlur}px)`:(filterLevel?`url("#tdg-photo-smear-${filterLevel}")`:'none');
       filterLevels[i]=filterKey;
     }
   });
-  updateLabel(intro?0:mod(Math.round(position),count));
+  updateLabel(intro?introFirst:mod(Math.round(position),count));
   if(intro||Math.abs(target-position)>.0001||drag)requestRender();
 }
 function requestRender(){if(assetsReady&&!raf){lastTime=performance.now();raf=requestAnimationFrame(render);}}
