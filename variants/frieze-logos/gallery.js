@@ -23,6 +23,7 @@ const title = document.querySelector('#project-title');
 const projectBrand = document.querySelector('#project-brand');
 const caption = document.querySelector('#project-caption');
 const counter = document.querySelector('#current');
+const counterGroup = document.querySelector('.counter');
 const hint = document.querySelector('#gesture-hint');
 const motionToggle = document.querySelector('#motion-toggle');
 const projectLabel = document.querySelector('.project-label');
@@ -61,7 +62,9 @@ const count = projects.length;
 const mod = (n,m) => ((n%m)+m)%m;
 const introFirst=projects.findIndex(project=>project.slug==='moonshine');
 const introPasses=3,introSteps=count*introPasses,introCardTurns=3;
-const gatherStart=860,gatherDuration=1000,cardArrivalDuration=180;
+const gatherStart=860,gatherDuration=1440,cardArrivalDuration=420;
+const rushDuration=1000,brakeDuration=3500;
+const motionDuration=gatherStart+gatherDuration+rushDuration+brakeDuration;
 let position = reduce.matches ? 0 : introFirst;
 let target = 0;
 let introStart = performance.now();
@@ -86,6 +89,7 @@ let closeInProgress = false;
 let motionPaused=reduce.matches;
 let driftVelocity=0;
 let manualUntil=0;
+let keyboardMode=false;
 
 function logoNode(project){
   if(!project.logo){const text=document.createElement('span');text.className='logo-fallback';text.textContent=project.name;return text;}
@@ -94,8 +98,8 @@ function logoNode(project){
   if(project.slug==='wang-records')img.classList.add('wang-logo');
   return img;
 }
-// Match the selected opening: Moonshine leads three full turns through all ten
-// brands, including the honest Dig In text fallback, and closes the reel again.
+// Moonshine leads a repeated reel of the ten brands, including the honest
+// Dig In text fallback. The reel leaves while the photographs slow down.
 const introPartners=Array.from({length:count},(_,i)=>projects[mod(i+introFirst,count)]);
 const introSequence=[...Array.from({length:introPasses},()=>introPartners).flat(),introPartners[0]];
 introSequence.forEach(project=>{
@@ -114,16 +118,15 @@ function logoGeometry(){
   logoDestination={x:bounds.left,y:bounds.top,scale:bounds.width/120};
 }
 const clamp01=value=>Math.max(0,Math.min(1,value));
+const smoothstep=value=>{const p=clamp01(value);return p*p*(3-2*p);};
 // Gather every card with a modest speed increase, then accelerate immediately
 // from the last arrival. The brake ends at a positive speed, shared with idle
 // drift, so the logo's corner flight never leaves the photographs stationary.
 function introMotion(elapsed){
   let t=Math.max(0,(elapsed-gatherStart)/1000);
-  const initial=.65,gathered=1.6,peak=18,drift=.05;
-  const gather=gatherDuration/1000,ramp=1.14,brake=1.5;
+  const initial=.8,gathered=1.6,peak=14,drift=.2/introCardTurns;
+  const gather=gatherDuration/1000,ramp=rushDuration/1000,brake=brakeDuration/1000;
   const phases=[[initial,gathered,gather],[gathered,peak,ramp],[peak,drift,brake]];
-  const rawDistance=phases.reduce((sum,[from,to,duration])=>sum+(from+to)*duration/2,0);
-  const scale=introSteps/rawDistance;
   let distance=0,speed=initial;
   for(const [from,to,duration] of phases){
     const q=Math.min(1,t/duration);
@@ -134,9 +137,9 @@ function introMotion(elapsed){
     if(to===drift)distance+=t*drift;
   }
   if(elapsed<gatherStart)speed=0;
-  return {distance:distance*scale,speed:speed*scale,normalisedSpeed:speed/peak};
+  return {distance,speed,normalisedSpeed:speed/peak};
 }
-const idleSpeed=introMotion(introDuration).speed*introCardTurns;
+const idleSpeed=introMotion(motionDuration).speed*introCardTurns;
 function cardEntrance(elapsed,rank){
   const stagger=(gatherDuration-cardArrivalDuration)/(count-1);
   return clamp01((elapsed-gatherStart-rank*stagger)/cardArrivalDuration);
@@ -261,9 +264,9 @@ function render(now){
     motion=introMotion(introElapsed);
     position=introFirst+motion.distance*introCardTurns;
     drawIntro(introElapsed,motion);
-    if(introElapsed>=introDuration){intro=false;target=position;driftVelocity=idleSpeed;setLogoAtRest();}
+    if(introElapsed>=motionDuration){intro=false;target=position;driftVelocity=idleSpeed;setLogoAtRest();}
   }else{
-    const focusedCard=document.activeElement?.closest('.project-card');
+    const focusedCard=keyboardMode&&document.activeElement?.closest('.project-card');
     const canDrift=!reduce.matches&&!motionPaused&&!dialogActive&&!drag&&!focusedCard&&now>=manualUntil;
     if(canDrift){
       // Integrate the recovery to idle velocity too; never snap to a new card
@@ -280,21 +283,28 @@ function render(now){
     }
   }
   const speed=Math.abs(position-before)/Math.max(dt,1)*16;
+  const gatherProgress=smoothstep((introElapsed-gatherStart)/gatherDuration);
+  const expansion=intro?smoothstep((introElapsed-gatherStart-gatherDuration)/rushDuration):1;
+  // Keep the whole small strip on screen while cards arrive. Expand only once
+  // the last fade has completed, together with the stronger acceleration.
+  const compactSpread=Math.min(.38,gallery.clientWidth/(spacing*(count+1))*.8);
+  const gatheredSpread=compactSpread*(.78+.22*gatherProgress);
+  const spread=intro?gatheredSpread+(1-gatheredSpread)*expansion:1;
   cards.forEach((card,i)=>{
     const distance=mod(i-position+count/2,count)-count/2;
     const a=Math.abs(distance);
     const rank=mod(i-introFirst,count);
-    const entrance=intro?cardEntrance(introElapsed,rank):1,arrived=1-Math.pow(1-entrance,3);
-    const visible=a<3.65&&entrance>0;
+    const entrance=intro?cardEntrance(introElapsed,rank):1,arrived=smoothstep(entrance);
+    const visibilityLimit=3.65+(count/2-3.65)*(1-expansion);
+    const edgeFade=1-smoothstep((a-visibilityLimit+.65)/.65);
+    const visible=edgeFade>.001&&entrance>0;
     card.style.visibility=visible?'visible':'hidden';
-    card.style.opacity=String(Math.min(1,entrance*3));
+    card.style.opacity=String(arrived*edgeFade);
     if(!visible)return;
-    const gatherProgress=clamp01((introElapsed-gatherStart)/gatherDuration);
-    const spread=intro ? .26+.74*gatherProgress*gatherProgress*(3-2*gatherProgress) : 1;
     const depth=a*22*spread;
     const yaw=Math.max(-78,Math.min(78,-distance*24));
     const x=distance*spacing*spread;
-    const scale=(1+Math.min(a,3.4)*.1)*(intro?(.88+.12*arrived)*(.5+.5*spread):1);
+    const scale=(1+Math.min(a,3.4)*.1)*(intro?(.92+.08*arrived)*(.5+.5*spread):1);
     let y=0;
     if(intro){
       // Keep entering photographs below the lockup, including their tallest
@@ -305,7 +315,7 @@ function render(now){
       const lockupBottom=introHeight*.29+(mobile?50:65)+12;
       const nearDepth=depth+cardSize*.5*scale*Math.abs(Math.sin(yaw*Math.PI/180));
       const minimumY=originY+(lockupBottom-originY)*(1-nearDepth/perspective)-centreY+cardSize*.95*scale*.5;
-      y=Math.max(-(1-arrived)*64,minimumY)*(1-lockupEase((introElapsed-3900)/600));
+      y=Math.max(-(1-arrived)*28,minimumY)*(1-lockupEase((introElapsed-3900)/600));
     }
     card.style.transform=`translate(-50%,-50%) translate3d(${x.toFixed(3)}px,${y.toFixed(3)}px,${depth.toFixed(3)}px) rotateY(${yaw.toFixed(3)}deg) scale(${scale.toFixed(4)})`;
     card.style.zIndex=String(20-Math.round(a*3));
@@ -322,13 +332,17 @@ function render(now){
     }
   });
   projectLabel.setAttribute('aria-live',now<manualUntil?'polite':'off');
-  updateLabel(intro?introFirst:mod(Math.round(position),count));
-  const ambientPending=!reduce.matches&&!motionPaused&&!dialogActive&&!document.activeElement?.closest('.project-card');
+  const labelReady=!intro||(introElapsed>=introDuration&&motion.speed*introCardTurns<=2);
+  projectLabel.style.opacity=labelReady?'':'0';counterGroup.style.opacity=labelReady?'':'0';
+  updateLabel(labelReady?mod(Math.round(position),count):introFirst);
+  const ambientPending=!reduce.matches&&!motionPaused&&!dialogActive&&!(keyboardMode&&document.activeElement?.closest('.project-card'));
   if(intro||ambientPending||Math.abs(target-position)>.0001||drag)requestRender(true);
 }
 function requestRender(continuing=false){if(assetsReady&&!raf){if(!continuing)lastTime=performance.now();raf=requestAnimationFrame(render);}}
 function interact(){
   if(intro){intro=false;target=position;setLogoAtRest();}
+  projectLabel.style.opacity='';counterGroup.style.opacity='';
+  updateLabel(mod(Math.round(position),count));
   driftVelocity=0;
   manualUntil=performance.now()+1800;
   hint.classList.add('used');
@@ -360,6 +374,7 @@ gallery.addEventListener('wheel',event=>{
 
 gallery.addEventListener('pointerdown',event=>{
   if(event.button!==0||dialogActive||event.target.closest('.gallery-footer'))return;
+  keyboardMode=false;
   interact();moved=false;
   drag={id:event.pointerId,startX:event.clientX,startY:event.clientY,lastX:event.clientX,lastTime:performance.now(),velocity:0,target};
   gallery.classList.add('dragging');
@@ -398,17 +413,19 @@ motionToggle.addEventListener('click',()=>{
   clearTimeout(settleTimer);syncMotionControl();requestRender();
 });
 gallery.addEventListener('focusin',event=>{
-  if(event.target.closest('.project-card')){interact();target=position;requestRender();}
+  if(keyboardMode&&event.target.closest('.project-card')){interact();target=position;requestRender();}
 });
 gallery.addEventListener('focusout',()=>requestRender());
+document.addEventListener('keydown',event=>{if(event.key==='Tab')keyboardMode=true;});
 gallery.addEventListener('keydown',event=>{
+  keyboardMode=true;
   if(dialogActive)return;
   if(['ArrowRight','ArrowDown','ArrowLeft','ArrowUp','Home','End'].includes(event.key)){
     event.preventDefault();
     if(event.key==='Home'){interact();target=0;requestRender();}
     else if(event.key==='End'){interact();target=count-1;requestRender();}
     else goBy(['ArrowRight','ArrowDown'].includes(event.key)?1:-1);
-  }else if((event.key==='Enter'||event.key===' ')&&event.target===gallery){event.preventDefault();openProject(selected);}
+  }else if((event.key==='Enter'||event.key===' ')&&event.target===gallery){event.preventDefault();openProject(intro?mod(Math.round(position),count):selected);}
 });
 
 function makeFlight(image,start,end,done){
